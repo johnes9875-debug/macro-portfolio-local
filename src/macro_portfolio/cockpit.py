@@ -184,7 +184,7 @@ def render_sheets(sheets: dict, holdings: list) -> str:
                        ("Value per share", _num(b.get("intrinsic_value_per_share"))), ("Terminal value share", _pct(b.get("terminal_value_share"), 0))]:
             o.append(f"<tr><td>{lab}</td><td class='r'>{v}</td></tr>")
         o.append("</table></div><div><b style='font-size:13px'>Discount rate</b><table class='kv'>")
-        for lab, v in [("Raw beta (2y weekly)", _num(c.get("raw_beta"))), ("Valuation beta", _num(c.get("valuation_beta"))),
+        for lab, v in [("Raw beta (2y weekly)", _num(c.get("raw_beta"))), ("Valuation beta" + (" (industry)" if c.get("beta_source") == "BOTTOM_UP_INDUSTRY" else ""), _num(c.get("valuation_beta"))),
                        ("Cost of equity", _pct(c.get("cost_of_equity"))), ("After-tax cost of debt", _pct(c.get("after_tax_cost_of_debt"))),
                        ("Debt weight", _pct(c.get("debt_weight"), 0)), ("Discount rate (WACC)", _pct(b.get("discount_rate") or c.get("discount_rate"))),
                        ("Terminal growth", _pct(b.get("terminal_growth") or c.get("terminal_growth")))]:

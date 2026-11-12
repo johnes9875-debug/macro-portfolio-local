@@ -1,4 +1,4 @@
-# MacroPortfolioLocal v1.0.14 — Valuation Fixes, Risk Panel, Paper Trading
+# MacroPortfolioLocal v1.0.15 — Industry Betas, Valuation Fixes, Risk Panel, Paper Trading
 
 ## Setup from GitHub
 
@@ -52,6 +52,26 @@ The deduplicated master universe is:
 
 All investable names must be mapped to one of the 11 canonical GICS sectors
 before Section E is allowed to continue.
+
+## v1.0.15 bottom-up industry betas (config: `valuation.industry_beta`)
+
+The discount rate's beta now comes from the company's industry, not its own 2-year regression.
+Why: in 2023-2026 technology dominated SPY and every defensive sector's recent beta collapsed
+(staples ETF: 0.19 over 3 years vs 0.56 over 10; energy 0.29 vs 0.90; healthcare 0.38 vs 0.72),
+which put most defensives on the old beta floor.
+
+1. **Level**: the sector ETF's 10-year weekly beta vs SPY.
+2. **Industry tilt**: beta of an equal-weighted portfolio of the GICS sub-industry's universe stocks
+   minus that of the sector's, over 3 years, shrunk by n/(n+4) and capped at +/-0.35
+   (sector level alone when fewer than 4 peers).
+3. **Leverage**: unlevered at the peers' median debt/equity, relevered at the company's own.
+   Financial models (banks, insurers) use the levered industry beta.
+4. Cost of equity, WACC and discount rate are recomputed with the engine's own identities.
+
+Audit files: `outputs/stocks/f4_industry_beta_audit.csv`, `f4_industry_beta_sector_levels.csv`.
+`enabled: false` restores v1.0.14. Before/after: `docs/industry_beta_before_after_v1015.csv`.
+Known limit: sub-industries with fewer than 4 universe peers (e.g. gold miners, tobacco) use the
+sector level.
 
 ## v1.0.14 valuation fixes (config: `valuation.fixes`)
 

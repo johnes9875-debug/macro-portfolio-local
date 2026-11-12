@@ -1,12 +1,9 @@
-# Regenerated with valuation engine v1.0.14 (replaces the v1.0.13 proposal kept as 2026-11-11_proposed_v1013_superseded.csv.txt).
-# Paper orders proposed from run LOCAL_20261111_164650 (market data 2026-11-11). NAV 1,000,000.00, cash 1,000,000.00.
+# Regenerated with v1.0.15 (industry betas). Earlier proposals kept as *_superseded.csv.txt.
+# Paper orders proposed from run LOCAL_20261111_170230 (market data 2026-11-11). NAV 1,000,000.00, cash 1,000,000.00.
 # Edit freely: shares, action (EXECUTE/SKIP), limit_price, fill_price, note; add or delete rows.
 # Then run scripts\paper_approve.bat. Nothing fills until approved.
 order_id,ticker,side,shares,action,limit_price,fill_price,ref_price,est_value,current_shares,target_shares,target_weight,reason,flag,note
-2026-11-11-01,MO,BUY,1292.0,EXECUTE,,,77.39,99987.88,0,1292,0.1,new position,,
-2026-11-11-02,CF,BUY,811.0,EXECUTE,,,123.24,99947.64,0,811,0.1,new position,valuation review,
-2026-11-11-03,CPAY,BUY,216.0,EXECUTE,,,461.95,99781.2,0,216,0.1,new position,,
-2026-11-11-04,NEM,BUY,838.0,EXECUTE,,,118.47,99277.86,0,838,0.09938,new position,,
-2026-11-11-05,SJM,BUY,728.0,EXECUTE,,,133.07,96874.97,0,728,0.096994,new position,valuation review,
-2026-11-11-06,FDS,BUY,199.0,EXECUTE,,,334.88,66641.12,0,199,0.0668,new position,,
-2026-11-11-07,APA,BUY,796.0,EXECUTE,,,46.74,37205.04,0,796,0.03725,new position,,
+2026-11-11-01,NEM,BUY,844.0,EXECUTE,,,118.47,99988.68,0,844,0.1,new position,,
+2026-11-11-02,MO,BUY,1292.0,EXECUTE,,,77.39,99987.88,0,1292,0.1,new position,valuation review,
+2026-11-11-03,CF,BUY,811.0,EXECUTE,,,123.24,99947.64,0,811,0.1,new position,valuation review,
+2026-11-11-04,APA,BUY,1135.0,EXECUTE,,,46.74,53049.9,0,1135,0.053061,new position,,

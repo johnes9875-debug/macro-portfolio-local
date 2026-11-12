@@ -34,6 +34,7 @@ KEY_OBJECTS = [
     "L_TARGET_WEIGHTS",
     # v1.0.14: valuation detail for per-holding valuation sheets
     "F4_COST_OF_CAPITAL",
+    "F4_INDUSTRY_BETA_AUDIT",
     "F5_FINAL_SCENARIO_VALUATIONS",
     "F5_FINAL_FORECAST_CASHFLOWS",
     "F5_SCENARIO_VALUATIONS",

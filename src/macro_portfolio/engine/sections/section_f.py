@@ -35217,6 +35217,48 @@ if F4B_PASSED:
 
     )
 
+# ============================================================
+# 38b. v1.0.15 BOTTOM-UP INDUSTRY BETA OVERLAY (valuation.industry_beta)
+#
+# Replaces the company/sector regression beta with an industry beta:
+# 10-year sector-ETF level + shrunk 3-year sub-industry tilt, unlevered at
+# peer leverage and relevered at the company's own leverage (financials use
+# the levered industry beta). Recomputes cost of equity, WACC and the
+# discount rate with the engine's identities. See industry_beta.py.
+# ============================================================
+F4_INDUSTRY_BETA_CONFIG = dict(cfg(["valuation", "industry_beta"], {}) or {})
+F4_INDUSTRY_BETA_APPLIED = False
+if F4B_PASSED and bool(F4_INDUSTRY_BETA_CONFIG.get("enabled", False)):
+    from macro_portfolio.industry_beta import apply_industry_betas as _apply_industry_betas
+    (
+        F4_COST_OF_CAPITAL,
+        F4_INDUSTRY_BETA_AUDIT,
+        F4_INDUSTRY_BETA_SECTOR_TABLE,
+    ) = _apply_industry_betas(
+        F4_COST_OF_CAPITAL,
+        PROJECT_ROOT,
+        STOCK_OUTPUT_DIR,
+        float(F4_RISK_FREE_RATE),
+        float(F4_EQUITY_RISK_PREMIUM),
+        F4_MARKET_AS_OF,
+        F4_INDUSTRY_BETA_CONFIG,
+    )
+    _ib_applied = int((F4_INDUSTRY_BETA_AUDIT["status"] == "APPLIED").sum()) if not F4_INDUSTRY_BETA_AUDIT.empty else 0
+    if _ib_applied == 0:
+        raise RuntimeError("Industry beta overlay enabled but applied to no company.")
+    if (F4_COST_OF_CAPITAL["terminal_safety_spread"] < float(cfg(["valuation", "min_r_minus_g"], 0.015))).any():
+        raise RuntimeError("Industry beta overlay produced a discount rate too close to terminal growth.")
+    F4_INDUSTRY_BETA_AUDIT.to_csv(Path(STOCK_OUTPUT_DIR) / "f4_industry_beta_audit.csv", index=False)
+    F4_INDUSTRY_BETA_SECTOR_TABLE.to_csv(Path(STOCK_OUTPUT_DIR) / "f4_industry_beta_sector_levels.csv", index=False)
+    F4_INDUSTRY_BETA_APPLIED = True
+    print(
+        f"Industry beta overlay: {_ib_applied} companies; median beta "
+        f"{F4_INDUSTRY_BETA_AUDIT['final_beta'].median():.2f}; median discount rate "
+        f"{F4_INDUSTRY_BETA_AUDIT['discount_rate_before'].median():.2%} -> "
+        f"{F4_INDUSTRY_BETA_AUDIT['discount_rate_after'].median():.2%}"
+    )
+
+
 
 # ============================================================
 # 39. SUMMARY
