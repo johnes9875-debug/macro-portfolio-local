@@ -25030,7 +25030,12 @@ F4_MARKET_BETA_WEIGHT = 1.0 / 3.0
 # Production beta bounds.
 # ------------------------------------------------------------
 
-F4_MIN_VALUATION_BETA = 0.50
+# v1.0.14: floor is configurable (valuation.fixes.min_valuation_beta).
+# Two years of weekly betas put many defensives near zero; the floor keeps
+# their cost of equity from collapsing to the risk-free rate.
+F4_MIN_VALUATION_BETA = float(
+    (dict(cfg(["valuation", "fixes"], {}) or {})).get("min_valuation_beta", 0.50)
+)
 
 F4_MAX_VALUATION_BETA = 2.50
 
@@ -29016,7 +29021,10 @@ F4A_WINSOR_UPPER = 0.975
 # Final beta bounds.
 # ------------------------------------------------------------
 
-F4A_MIN_BETA = 0.50
+# v1.0.14: same configurable floor as F4 (valuation.fixes.min_valuation_beta)
+F4A_MIN_BETA = float(
+    (dict(cfg(["valuation", "fixes"], {}) or {})).get("min_valuation_beta", 0.50)
+)
 
 F4A_MAX_BETA = 2.50
 
@@ -32918,7 +32926,10 @@ F4B_SECTOR_PRIOR_FLOOR_MULTIPLIER = 0.75
 # Global beta bounds.
 # ------------------------------------------------------------
 
-F4B_MIN_BETA = 0.50
+# v1.0.14: same configurable floor as F4 (valuation.fixes.min_valuation_beta)
+F4B_MIN_BETA = float(
+    (dict(cfg(["valuation", "fixes"], {}) or {})).get("min_valuation_beta", 0.50)
+)
 
 F4B_MAX_BETA = 2.50
 
@@ -50258,6 +50269,11 @@ F4F_LOW_QUALITY_SOURCES = set(
     ]
 )
 
+F4F_OWN_MULTIPLE_WEIGHT = float(
+    (dict(cfg(["valuation", "fixes"], {}) or {})).get("exit_multiple_own_weight", 0.0)
+)
+if not 0.0 <= F4F_OWN_MULTIPLE_WEIGHT <= 1.0:
+    raise RuntimeError("valuation.fixes.exit_multiple_own_weight must be in [0, 1].")
 F4F_MIN_ANCHOR_TO_CURRENT = float(
     F4F_GUARDRAIL_POLICY[
         "min_anchor_to_current"
@@ -50557,7 +50573,7 @@ F4F_ANCHORS[
 # ============================================================
 
 final_base_values = []
-
+blended_base_values = []
 guardrail_reasons = []
 
 
@@ -50718,6 +50734,27 @@ for _, row in (
     final_base_values.append(
         final_base
     )
+    # --------------------------------------------------------
+    # v1.0.14 OWN-MULTIPLE BLEND (valuation.fixes.exit_multiple_own_weight)
+    #
+    # A pure peer anchor assumes a company's premium (or discount)
+    # disappears by year 5. Blend geometrically with the company's own
+    # current multiple so the premium persists partially:
+    #     blended = current^w * peer_guardrailed^(1-w)
+    # The guardrail checks below keep validating the pre-blend
+    # peer anchor (peer_guardrail_base_exit_multiple).
+    # --------------------------------------------------------
+    blended_base = final_base
+    _own = pd.to_numeric(pd.Series([row["current_trading_multiple"]]), errors="coerce").iloc[0]
+    if F4F_OWN_MULTIPLE_WEIGHT > 0 and pd.notna(_own):
+        _cur_lo, _cur_hi = F4F_CURRENT_MULTIPLE_BOUNDS[str(metric)]
+        if float(_cur_lo) <= float(_own) <= float(_cur_hi) and final_base > 0:
+            blended_base = float(np.clip(
+                float(_own) ** F4F_OWN_MULTIPLE_WEIGHT * final_base ** (1.0 - F4F_OWN_MULTIPLE_WEIGHT),
+                lower_bound, upper_bound,
+            ))
+    blended_base_values.append(blended_base)
+
 
 
     guardrail_reasons.append(
@@ -50725,13 +50762,9 @@ for _, row in (
     )
 
 
-F4F_ANCHORS[
-    "base_exit_multiple"
-] = (
-
-    final_base_values
-
-)
+F4F_ANCHORS["peer_guardrail_base_exit_multiple"] = final_base_values
+F4F_ANCHORS["base_exit_multiple"] = blended_base_values
+F4F_ANCHORS["own_multiple_blend_weight"] = F4F_OWN_MULTIPLE_WEIGHT
 
 
 F4F_ANCHORS[
@@ -50754,7 +50787,7 @@ F4F_ANCHORS[
     (
 
         F4F_ANCHORS[
-            "base_exit_multiple"
+            "peer_guardrail_base_exit_multiple"
         ]
 
         -
@@ -50948,7 +50981,7 @@ high_quality_changed_count = int(
         F4F_ANCHORS.loc[
 
             high_quality_mask,
-            "base_exit_multiple",
+            "peer_guardrail_base_exit_multiple",
 
         ]
 
@@ -52682,6 +52715,55 @@ F5_VERSION = "1.1.0"
 # 4. VALUATION CONFIGURATION
 # ============================================================
 
+# ------------------------------------------------------------
+# v1.0.14 valuation fixes (config: valuation.fixes)
+# ------------------------------------------------------------
+_F5_FIXES = dict(cfg(["valuation", "fixes"], {}) or {})
+F5_NWC_INCREMENTAL = bool(_F5_FIXES.get("nwc_on_incremental_revenue", False))
+F5_NWC_K_BOUNDS = tuple(float(x) for x in _F5_FIXES.get("nwc_incremental_bounds", [-0.10, 0.30]))
+F5_NWC_K_DEFAULT = float(_F5_FIXES.get("nwc_incremental_default", 0.10))
+F5_NWC_K_YEARS = int(_F5_FIXES.get("nwc_history_years", 5))
+F5_NWC_INTENSITY_AUDIT = {}
+
+
+def f5_nwc_incremental_intensity(ticker):
+    """Working-capital investment per $1 of revenue CHANGE.
+
+    Aggregate over up to `nwc_history_years` of annual history:
+        sum(-cash-flow change in working capital) / sum(change in revenue)
+    clipped to `nwc_incremental_bounds`. When revenue barely moved (total
+    change < 3% of average revenue) the ratio is meaningless and the default
+    intensity applies.
+    """
+    key = str(ticker)
+    if key in F5_NWC_INTENSITY_AUDIT:
+        return F5_NWC_INTENSITY_AUDIT[key]["k"]
+    k, source, n = F5_NWC_K_DEFAULT, "DEFAULT", 0
+    try:
+        hist = (
+            F3_ANNUAL[F3_ANNUAL["ticker"].astype(str) == key]
+            .sort_values("period_end")
+            .tail(F5_NWC_K_YEARS + 1)
+        )
+        rev = pd.to_numeric(hist["revenue"], errors="coerce").reset_index(drop=True)
+        inv = -pd.to_numeric(hist["change_in_working_capital_cf"], errors="coerce").reset_index(drop=True)
+        d_rev = rev.diff()
+        ok = d_rev.notna() & inv.notna()
+        n = int(ok.sum())
+        sum_d = float(d_rev[ok].sum())
+        sum_inv = float(inv[ok].sum())
+        mean_rev = float(rev.mean())
+        if n >= 2 and mean_rev > 0 and sum_d > 0.03 * mean_rev:
+            k = float(np.clip(sum_inv / sum_d, F5_NWC_K_BOUNDS[0], F5_NWC_K_BOUNDS[1]))
+            source = "HISTORY_AGGREGATE"
+        else:
+            source = "DEFAULT_SMALL_REVENUE_CHANGE"
+    except Exception as exc:
+        source = f"DEFAULT_ERROR_{type(exc).__name__}"
+    F5_NWC_INTENSITY_AUDIT[key] = {"k": k, "source": source, "years": n}
+    return k
+
+
 F5_GORDON_WEIGHT = float(cfg(["valuation", "gordon_growth_weight"], 0.70))
 
 F5_EXIT_MULTIPLE_WEIGHT = float(cfg(["valuation", "terminal_multiple_weight"], 0.30))
@@ -54029,6 +54111,7 @@ for _, target in (
                 # Revenue.
                 # --------------------------------------------
 
+                prev_revenue = revenue
                 revenue = (
 
                     revenue
@@ -54116,13 +54199,19 @@ for _, target in (
                 # release and therefore increases FCFF.
                 # --------------------------------------------
 
-                nwc_investment = (
-
-                    revenue
-                    *
-                    nwc_ratio
-
-                )
+                if F5_NWC_INCREMENTAL:
+                    # v1.0.14: NWC investment scales with the CHANGE in revenue
+                    # (intensity per $ of incremental revenue, from history).
+                    nwc_investment = (
+                        f5_nwc_incremental_intensity(ticker)
+                        * (revenue - prev_revenue)
+                    )
+                else:
+                    nwc_investment = (
+                        revenue
+                        *
+                        nwc_ratio
+                    )
 
 
                 fcff = (
@@ -71079,6 +71168,18 @@ F6_FORECAST_INPUTS[
 # 7. SAFE NUMERIC HELPER
 # ============================================================
 
+# v1.0.14 audit: working-capital intensity used by F5/F6 per company.
+try:
+    if F5_NWC_INTENSITY_AUDIT:
+        (
+            pd.DataFrame.from_dict(F5_NWC_INTENSITY_AUDIT, orient="index")
+            .rename_axis("ticker").reset_index()
+            .to_csv(STOCK_OUTPUT_DIR / "f5_nwc_intensity_audit.csv", index=False)
+        )
+except Exception as _nwc_audit_exc:
+    print("NWC intensity audit not saved:", _nwc_audit_exc)
+
+
 def f6_numeric(
     value,
     default=np.nan,
@@ -71903,6 +72004,7 @@ def f6_operating_valuation(
             return None
 
 
+        prev_revenue = revenue
         revenue = (
 
             revenue
@@ -71961,13 +72063,19 @@ def f6_operating_valuation(
         )
 
 
-        nwc_investment = (
-
-            revenue
-            *
-            nwc_ratio
-
-        )
+        if F5_NWC_INCREMENTAL:
+            # v1.0.14: NWC investment scales with the CHANGE in revenue
+            # (intensity per $ of incremental revenue, from history).
+            nwc_investment = (
+                f5_nwc_incremental_intensity(target["ticker"])
+                * (revenue - prev_revenue)
+            )
+        else:
+            nwc_investment = (
+                revenue
+                *
+                nwc_ratio
+            )
 
 
         fcff = (

@@ -24,6 +24,9 @@ def test_f4f_extreme_current_multiple_does_not_create_impossible_gate(tmp_path, 
     f4f = _cell_source(section_text, 71)
 
     config = yaml.safe_load((root / "config" / "settings.yaml").read_text(encoding="utf-8"))
+    # This regression test checks the v1.0.13 low-quality guardrail mechanics, so the
+    # v1.0.14 own-multiple blend (a separate, later step) is switched off here.
+    config.setdefault("valuation", {}).setdefault("fixes", {})["exit_multiple_own_weight"] = 0.0
 
     def cfg(keys, default=None):
         current = config

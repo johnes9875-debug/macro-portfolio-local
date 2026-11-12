@@ -371,6 +371,24 @@ def record_run(project_root: Path, run_dir: Path, min_weight: float = DEFAULT_MI
             snap["paper"] = paper
     except Exception:
         pass
+    # v1.0.14: institutional risk / limits panel and per-holding valuation sheets
+    try:
+        from .paper import load_config
+        from .risk_panel import build_risk_panel
+        cfg = load_config(project_root)
+        review = [h["ticker"] for h in snap["holdings"] if h.get("valuation_review_severity") in ("REVIEW", "CRITICAL_REVIEW")]
+        snap["risk"] = build_risk_panel(project_root, snap["holdings"], sess, cfg, float(snap["kpis"].get("nav") or 1_000_000),
+                                        blocked=[b["ticker"] for b in snap.get("blocked", [])], review=review)
+    except Exception as exc:
+        snap["risk"] = {"available": False, "reason": f"{type(exc).__name__}: {exc}"}
+    try:
+        from .paper import load_config
+        from .valuation_sheet import build_sheets
+        names = [h["ticker"] for h in snap["holdings"]] + [t["ticker"] for t in snap["trades"] if t["side"] in ("BUY", "ADD")]
+        snap["valuation_sheets"] = build_sheets(project_root, run_dir, list(dict.fromkeys(names)), load_config(project_root))
+    except Exception as exc:
+        snap["valuation_sheets"] = {}
+        snap.setdefault("warnings", []).append(f"valuation sheets: {type(exc).__name__}: {exc}")
 
     (d / "snapshots" / f"{sess}_{rid}.json").write_text(json.dumps(snap, indent=1), encoding="utf-8")
 

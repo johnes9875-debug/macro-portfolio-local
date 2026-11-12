@@ -1,6 +1,6 @@
 system:
   project_name: Macro Regime Portfolio Engine
-  version: local-1.0.13-valuation-guardrails
+  version: local-1.0.14-valuation-fixes
   random_seed: 42
 portfolio:
   base_currency: USD
@@ -158,6 +158,18 @@ valuation:
     - BROAD_SIMILARITY
     min_anchor_to_current: 0.5
     max_anchor_to_current: 2.0
+  # v1.0.14 valuation fixes. Each can be switched off to reproduce v1.0.13.
+  fixes:
+    # Working-capital investment = intensity x CHANGE in revenue (was: ratio x revenue LEVEL,
+    # which turned one-off cash-flow items into permanent drags or releases).
+    nwc_on_incremental_revenue: true
+    nwc_incremental_default: 0.10      # used when revenue barely moved in history
+    nwc_incremental_bounds: [-0.10, 0.30]
+    nwc_history_years: 5
+    # Exit multiple = current^w x peer^(1-w). 0 = pure peer anchor (v1.0.13 behaviour).
+    exit_multiple_own_weight: 0.5
+    # Floor on the shrunk valuation beta (v1.0.13 used 0.50).
+    min_valuation_beta: 0.70
   anomaly_gate:
     iv_price_ratio_min: 0.2
     iv_price_ratio_max: 3.0

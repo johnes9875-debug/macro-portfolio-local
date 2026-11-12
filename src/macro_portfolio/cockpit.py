@@ -37,6 +37,14 @@ td{padding:7px 6px;border-bottom:1px solid var(--line)}td.r,th.r{text-align:righ
 .bar{height:8px;border-radius:4px;background:var(--acc)}.bart{background:var(--line);border-radius:4px;width:100%}
 .mut{color:var(--mut)}.pos{color:var(--good)}.neg{color:var(--bad)}
 details summary{cursor:pointer;color:var(--mut);font-size:13px;margin-top:6px}
+.st-PASS{background:var(--goodbg);color:var(--good)}.st-WARN{background:var(--warnbg);color:var(--warn)}.st-FAIL{background:var(--badbg);color:var(--bad)}.st-NA{background:var(--card);color:var(--mut)}
+.sheet{border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:12px 0}
+.sheet h3{font-size:15px;margin:0 0 4px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:8px}
+.kv td{padding:4px 6px}.kv td:first-child{color:var(--mut)}
+.sens td,.sens th{text-align:right;padding:4px 6px;font-variant-numeric:tabular-nums}
+.up{background:var(--goodbg)}.dn{background:var(--badbg)}.mid{outline:2px solid var(--acc)}
+svg.ff text{font-size:11px;fill:var(--mut)}
 """
 
 
@@ -66,6 +74,143 @@ def _cls(x) -> str:
         return "pos" if float(x) > 0 else ("neg" if float(x) < 0 else "")
     except (TypeError, ValueError):
         return ""
+
+
+def _num(v, d=2):
+    try:
+        return f"{float(v):,.{d}f}"
+    except (TypeError, ValueError):
+        return "—"
+
+
+def _bn(v):
+    try:
+        f = float(v) / 1e9
+    except (TypeError, ValueError):
+        return "—"
+    return f"−${abs(f):,.1f}bn" if f < 0 else f"${f:,.1f}bn"
+
+
+def render_risk(risk: dict) -> str:
+    if not risk or not risk.get("available"):
+        return f"<h2>Risk and limits</h2><p class='mut'>Not available: {_e((risk or {}).get('reason', 'no data'))}</p>"
+    o = ["<h2>Risk and limits</h2>"]
+    ls = risk.get("limits_summary", {})
+    worst = min((x for x in risk.get("stress", []) if x.get("portfolio_return") is not None),
+                key=lambda x: x["portfolio_return"], default=None)
+    o.append("<div class='kpis'>")
+    for label, val, sub in [
+        ("Limits", f"{ls.get('PASS', 0)} pass · {ls.get('WARN', 0)} warn · {ls.get('FAIL', 0)} fail", "every configured constraint"),
+        ("Ex-ante volatility", _pct(risk.get("ex_ante_volatility")), f"beta {_num(risk.get('beta'))} to SPY (daily, 3y)"),
+        ("Tracking error vs SPY", _pct(risk.get("tracking_error")), f"mostly the cash position ({_pct(1 - (risk.get('invested') or 0), 0)})"),
+        ("1-day 99% VaR", _money(risk.get("var_99_1d_usd")), f"CVaR {_money(risk.get('cvar_99_1d_usd'))} (historical)"),
+        ("Concentration", f"{_num(risk.get('effective_positions'), 1)} effective names", f"top 5 = {_pct(risk.get('top5_weight'))}, avg corr {_num(risk.get('average_correlation'))}"),
+        ("Worst stress", _pct(worst["portfolio_return"]) if worst else "—", (worst or {}).get("scenario", "")),
+    ]:
+        o.append(f"<div class='k'><div class='l'>{_e(label)}</div><div class='v' style='font-size:19px'>{_e(val)}</div><div class='s'>{_e(sub)}</div></div>")
+    o.append("</div>")
+    o.append("<div class='grid2'><div><h2 style='font-size:14px'>Limits</h2><table><tr><th>Check</th><th class='r'>Value</th><th class='r'>Limit</th><th>Status</th></tr>")
+    for l in risk.get("limits", []):
+        fmt = (lambda x: _pct(x)) if l.get("unit") == "weight" else (lambda x: "—" if x is None else str(x))
+        o.append(f"<tr><td>{_e(l['limit'])}<div class='sub'>{_e(l.get('detail') or '')}</div></td><td class='r'>{fmt(l.get('value'))}</td>"
+                 f"<td class='r'>{fmt(l.get('limit_value'))}</td><td><span class='pill st-{_e(l['status'].replace('/', ''))}'>{_e(l['status'].title())}</span></td></tr>")
+    o.append("</table></div><div><h2 style='font-size:14px'>Where the risk comes from</h2><table><tr><th>Ticker</th><th class='r'>Weight</th><th class='r'>Share of risk</th><th class='r'>Own vol</th><th style='width:35%'></th></tr>")
+    for r in sorted(risk.get("risk_contributions", []), key=lambda r: -(r.get("risk_share") or 0)):
+        o.append(f"<tr><td><b>{_e(r['ticker'])}</b></td><td class='r'>{_pct(r['weight'])}</td><td class='r'>{_pct(r['risk_share'], 0)}</td>"
+                 f"<td class='r'>{_pct(r['standalone_vol'], 0)}</td><td><div class='bart'><div class='bar' style='width:{max(2, (r['risk_share'] or 0) * 100):.0f}%'></div></div></td></tr>")
+    o.append("</table></div></div>")
+    o.append("<h2 style='font-size:14px'>Stress tests</h2><table><tr><th>Scenario</th><th>Window</th><th class='r'>Portfolio</th><th class='r'>P&amp;L</th><th class='r'>SPY</th></tr>")
+    for x in risk.get("stress", []):
+        o.append(f"<tr><td>{_e(x['scenario'])}</td><td class='mut'>{_e(x['window'])}</td><td class='r {_cls(x['portfolio_return'])}'>{_pct(x['portfolio_return'], 1, True)}</td>"
+                 f"<td class='r {_cls(x['portfolio_pnl'])}'>{_money(x['portfolio_pnl'])}</td><td class='r mut'>{_pct(x.get('spy_return'), 1, True) if x.get('spy_return') is not None else '—'}</td></tr>")
+    o.append("</table><p class='sub'>Historical replays apply each holding's 3-year beta to its sector ETF to that ETF's move in the window "
+             "(stock histories are too short to replay directly). Shocks use 3-year betas to SPY, long Treasuries (TLT) and oil. Cash is held at 0.</p>")
+    return "".join(o)
+
+
+def _football(sh: dict) -> str:
+    rng = sh.get("range_52w") or {}
+    sc = sh.get("scenarios") or {}
+    rows = [("52-week range", rng.get("low"), rng.get("high"), 0.3),
+            ("Model bear to bull", sc.get("bear"), sc.get("bull"), 0.55)]
+    marks = [("Price", sh.get("price"), "var(--ink)", "3 0"), ("Buy price (MOS)", sh.get("mos_price"), "var(--good)", "3 0"),
+             ("Consensus target", sh.get("consensus_target"), "var(--warn)", "5 3"), ("Model base", sc.get("base"), "var(--acc)", "3 0")]
+    vals = [v for _, a, b, _ in rows for v in (a, b) if v] + [v for _, v, _, _ in marks if v]
+    if not vals:
+        return ""
+    lo, hi = min(vals) * 0.97, max(vals) * 1.03
+    W, L, R, H = 640, 130, 50, 70
+    x = lambda v: L + (v - lo) / (hi - lo) * (W - L - R)
+    o = [f"<svg class='ff' viewBox='0 0 {W} {H}' style='width:100%;max-width:{W}px;display:block' role='img' aria-label='valuation range chart'>"]
+    for i, (lab, a, b, op) in enumerate(rows):
+        if a and b:
+            y = 10 + i * 28
+            o.append(f"<text x='0' y='{y + 12}'>{_e(lab)}</text>"
+                     f"<rect x='{x(a):.1f}' y='{y}' width='{max(2, x(b) - x(a)):.1f}' height='16' rx='3' fill='var(--acc)' fill-opacity='{op}'/>"
+                     f"<text x='{x(a) - 4:.1f}' y='{y + 12}' text-anchor='end'>{a:,.0f}</text><text x='{x(b) + 4:.1f}' y='{y + 12}'>{b:,.0f}</text>")
+    for lab, v, col, dash in marks:
+        if v:
+            o.append(f"<line x1='{x(v):.1f}' x2='{x(v):.1f}' y1='4' y2='{H - 4}' stroke='{col}' stroke-width='2' stroke-dasharray='{dash}'><title>{_e(lab)} {v:,.2f}</title></line>")
+    o.append("</svg><div class='sub' style='display:flex;flex-wrap:wrap;gap:14px'>")
+    for lab, v, col, dash in marks:
+        if v:
+            o.append(f"<span><span style='display:inline-block;width:14px;height:0;border-top:2px {'dashed' if dash != '3 0' else 'solid'} {col};vertical-align:middle;margin-right:5px'></span>{_e(lab)} {v:,.2f}</span>")
+    o.append("</div>")
+    return "".join(o)
+
+
+def render_sheets(sheets: dict, holdings: list) -> str:
+    if not sheets:
+        return ""
+    order = [h["ticker"] for h in holdings] + [t for t in sheets if t not in {h["ticker"] for h in holdings}]
+    o = ["<h2>Valuation sheets</h2><p class='sub'>One per target holding or new buy. The grid recomputes the base-case DCF at other discount rates and terminal growth rates; "
+         "green cells are above today's price.</p>"]
+    for t in order:
+        sh = sheets.get(t)
+        if not sh:
+            continue
+        sc, b, c, im, mu = sh.get("scenarios", {}), sh.get("bridge") or {}, sh.get("cost_of_capital") or {}, sh.get("implied") or {}, sh.get("multiples") or {}
+        flag = f" <span class='pill p-rev'>{_e(str(sh.get('review')).replace('_', ' ').lower())}</span>" if sh.get("review") in ("REVIEW", "CRITICAL_REVIEW") else ""
+        up = (sc.get("expected") / sh["price"] - 1) if sc.get("expected") and sh.get("price") else None
+        o.append(f"<div class='sheet' id='sheet-{_e(t)}'><h3>{_e(t)} · {_e(sh.get('company_name'))}{flag}</h3>"
+                 f"<div class='sub'>{_e(str(sh.get('model')).replace('_', ' ').lower())} · price {_num(sh.get('price'))} · expected value {_num(sc.get('expected'))} "
+                 f"({_pct(up, 0, True)}) · consensus {_num(sh.get('consensus_target'))} · confidence {_pct(sh.get('confidence'), 0)}"
+                 + (f" · {_e(sh.get('review_reason'))}" if sh.get("review_reason") else "") + "</div>")
+        o.append(_football(sh))
+        o.append("<div class='grid3'><div><b style='font-size:13px'>Bridge (base case)</b><table class='kv'>")
+        for lab, v in [("PV of 5-year cash flows", _bn(b.get("pv_explicit_cash_flows"))), ("PV of terminal value", _bn(b.get("pv_terminal_value"))),
+                       ("Enterprise value", _bn(b.get("enterprise_value"))), ("Less net debt", _bn(b.get("net_debt"))),
+                       ("Equity value", _bn(b.get("equity_value"))), ("Shares", f"{(b.get('valuation_share_units') or 0) / 1e6:,.0f}m"),
+                       ("Value per share", _num(b.get("intrinsic_value_per_share"))), ("Terminal value share", _pct(b.get("terminal_value_share"), 0))]:
+            o.append(f"<tr><td>{lab}</td><td class='r'>{v}</td></tr>")
+        o.append("</table></div><div><b style='font-size:13px'>Discount rate</b><table class='kv'>")
+        for lab, v in [("Raw beta (2y weekly)", _num(c.get("raw_beta"))), ("Valuation beta", _num(c.get("valuation_beta"))),
+                       ("Cost of equity", _pct(c.get("cost_of_equity"))), ("After-tax cost of debt", _pct(c.get("after_tax_cost_of_debt"))),
+                       ("Debt weight", _pct(c.get("debt_weight"), 0)), ("Discount rate (WACC)", _pct(b.get("discount_rate") or c.get("discount_rate"))),
+                       ("Terminal growth", _pct(b.get("terminal_growth") or c.get("terminal_growth")))]:
+            o.append(f"<tr><td>{lab}</td><td class='r'>{v}</td></tr>")
+        o.append("</table></div><div><b style='font-size:13px'>What the price implies</b><table class='kv'>")
+        for lab, v in [(f"Market-implied {str(im.get('driver') or 'driver').replace('_', ' ').lower()}", _pct(im.get("market_implied"))),
+                       ("Model base assumption", _pct(im.get("model_base"))),
+                       (f"Current {mu.get('metric') or 'multiple'}", _num(mu.get("current"), 1) + "x"),
+                       ("Exit multiple used (year 5)", _num(mu.get("exit_base"), 1) + "x"),
+                       ("Scenario values bear / base / bull", f"{_num(sc.get('bear'), 0)} / {_num(sc.get('base'), 0)} / {_num(sc.get('bull'), 0)}")]:
+            o.append(f"<tr><td>{lab}</td><td class='r'>{v}</td></tr>")
+        o.append("</table></div></div>")
+        sens = sh.get("sensitivity")
+        if sens and sh.get("price"):
+            o.append("<div style='overflow-x:auto;margin-top:8px'><table class='sens' style='width:auto'><tr><th style='text-align:left'>WACC \\ growth</th>"
+                     + "".join(f"<th>{g * 100:.1f}%</th>" for g in sens["terminal_growth"]) + "</tr>")
+            for i, (r, row) in enumerate(zip(sens["discount_rates"], sens["values"])):
+                o.append(f"<tr><th style='text-align:left'>{r * 100:.1f}%</th>")
+                for j, v in enumerate(row):
+                    cls = ("up" if v and v > sh["price"] else "dn") if v else ""
+                    cls += " mid" if i == 2 and j == 2 else ""
+                    o.append(f"<td class='{cls}'>{_num(v, 0) if v else '—'}</td>")
+                o.append("</tr>")
+            o.append("</table>" + ("" if sh.get("reconciles") else "<div class='sub'>Note: grid does not exactly reproduce the engine's base value.</div>") + "</div>")
+        o.append("</div>")
+    return "".join(o)
 
 
 SIDE_PILL = {"BUY": "p-buy", "ADD": "p-buy", "SELL": "p-sell", "TRIM": "p-sell"}
@@ -153,6 +298,12 @@ def render_cockpit(snap: dict, track: pd.DataFrame | None = None, runs: pd.DataF
         nt = ", ".join(f"{_e(x['ticker'])} {_pct(x.get('target_weight'), 2)} ({_e(x.get('reason'))})" for x in snap["not_traded"])
         out.append(f"<p class='sub'>Not traded: {nt}.</p>")
     out.append("<p class='sub'>“Below buy price” = how far the price sits under the margin-of-safety entry price. Higher is cheaper.</p>")
+
+    # ---- risk / limits and valuation sheets (v1.0.14)
+    if snap.get("risk"):
+        out.append(render_risk(snap["risk"]))
+    if snap.get("valuation_sheets"):
+        out.append(render_sheets(snap["valuation_sheets"], snap.get("holdings", [])))
 
     # ---- paper account
     pa = snap.get("paper")

@@ -951,28 +951,36 @@ if (
 
             )
 
-            &
-
+                        &
             (
-
                 ~
                 G_FINAL_PORTFOLIO_WEIGHTS[
                     "new_entry_optimizer_eligible"
                 ]
                 .fillna(False)
                 .astype(bool)
-
             )
-
+            # v1.0.14: only BUYING MORE of a non-eligible name is a violation.
+            # An existing holding whose valuation later becomes blocked may be
+            # held (not added to); forcing an automatic sale on a model anomaly
+            # is not the policy.
+            &
+            (
+                pd.to_numeric(G_FINAL_PORTFOLIO_WEIGHTS["target_weight"], errors="coerce").fillna(0.0)
+                >
+                pd.to_numeric(
+                    G_FINAL_PORTFOLIO_WEIGHTS.get(
+                        "previous_weight",
+                        pd.Series(0.0, index=G_FINAL_PORTFOLIO_WEIGHTS.index),
+                    ),
+                    errors="coerce",
+                ).fillna(0.0)
+                + 1e-6
+            )
         )
-
         .sum()
-
     )
-
-
 else:
-
     K_NEW_ENTRY_MOS_VIOLATIONS = 0
 
 
@@ -1146,7 +1154,7 @@ K_LINEAGE_AUDIT = pd.DataFrame([
     {
 
         "check":
-            "No MOS-governance violation detected",
+            "No MOS-governance violation detected (no additions to ineligible names)",
 
         "passed":
             (

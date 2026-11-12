@@ -1,4 +1,4 @@
-# MacroPortfolioLocal v1.0.13 — Valuation Guardrails
+# MacroPortfolioLocal v1.0.14 — Valuation Fixes, Risk Panel, Paper Trading
 
 ## Setup from GitHub
 
@@ -52,6 +52,25 @@ The deduplicated master universe is:
 
 All investable names must be mapped to one of the 11 canonical GICS sectors
 before Section E is allowed to continue.
+
+## v1.0.14 valuation fixes (config: `valuation.fixes`)
+
+Each fix can be switched off to reproduce v1.0.13.
+
+1. **Working capital on incremental revenue** (`nwc_on_incremental_revenue`). v1.0.13 charged
+   (3-year median cash-flow change in working capital / revenue) x forecast revenue every year and
+   into the terminal value. One-off items became permanent: KO lost ~$5bn of free cash flow a year;
+   CPAY, EL and DLTR got impossible perpetual working-capital releases. Now:
+   intensity per $ of revenue change (5-year aggregate, clipped to [-10%, 30%], default 10%) x
+   change in revenue. Audit: `outputs/stocks/f5_nwc_intensity_audit.csv`.
+2. **Exit multiple keeps part of the company's own premium** (`exit_multiple_own_weight: 0.5`).
+   Year-5 multiple = current^0.5 x peer-anchor^0.5. The existing low-quality-anchor guardrail and
+   its checks are unchanged (they validate `peer_guardrail_base_exit_multiple`).
+3. **Configurable beta floor** (`min_valuation_beta: 0.70`, was a hard-coded 0.50 in F4, F4A, F4B).
+   Note: at 0.70 the floor binds for most names; industry (bottom-up) betas are the proper next step.
+
+Also: Section K no longer fails a run when an existing holding becomes valuation-blocked and is held
+(not added to). Before/after valuations for all 60 stocks: `docs/valuation_before_after_v1014.csv`.
 
 ## v1.0.13 valuation / execution corrections
 

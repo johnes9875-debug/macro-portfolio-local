@@ -1,0 +1,11 @@
+# Paper orders proposed from run LOCAL_20261111_134025 (market data 2026-11-11). NAV 1,000,000.00, cash 1,000,000.00.
+# Edit freely: shares, action (EXECUTE/SKIP), limit_price, fill_price, note; add or delete rows.
+# Then run scripts\paper_approve.bat. Nothing fills until approved.
+order_id,ticker,side,shares,action,limit_price,fill_price,ref_price,est_value,current_shares,target_shares,target_weight,reason,flag,note
+2026-11-11-01,MO,BUY,1292.0,EXECUTE,,,77.39,99987.88,0,1292,0.1,new position,valuation review,
+2026-11-11-02,KDP,BUY,2614.0,EXECUTE,,,38.25,99985.5,0,2614,0.1,new position,valuation review,
+2026-11-11-03,CPAY,BUY,216.0,EXECUTE,,,461.95,99781.2,0,216,0.1,new position,,
+2026-11-11-04,NEM,BUY,651.0,EXECUTE,,,118.47,77123.97,0,651,0.07719,new position,,
+2026-11-11-05,FDS,BUY,161.0,EXECUTE,,,334.88,53915.68,0,161,0.054245,new position,valuation review,
+2026-11-11-06,RMD,BUY,123.0,EXECUTE,,,238.53,29339.19,0,123,0.029537,new position,,
+2026-11-11-07,EL,BUY,81.0,EXECUTE,,,112.33,9098.73,0,81,0.009167,new position,,

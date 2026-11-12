@@ -61,7 +61,17 @@ td.r,th.r{text-align:right} tr:last-child td{border-bottom:0}
 .form input{width:120px}
 .msg{font-size:13px;min-height:1.2em}
 svg text{fill:var(--mut);font:11px var(--f-num)}
+.sheetnav button[aria-pressed="true"]{background:var(--accent);color:var(--panel);border-color:var(--accent)}
 .hidden{display:none}
+.st-PASS{background:var(--good-bg);color:var(--good)} .st-WARN{background:var(--warn-bg);color:var(--warn)} .st-FAIL{background:var(--bad-bg);color:var(--bad)} .st-NA{background:var(--line);color:var(--mut)}
+.sheet{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:12px}
+.sheet h3{font-size:15px;font-weight:600;margin:0 0 2px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:8px}
+.kv td{padding:4px 6px} .kv td:first-child{color:var(--mut)}
+.sens td,.sens th{text-align:right;padding:4px 7px}
+.c-up{background:var(--good-bg)} .c-dn{background:var(--bad-bg)} .c-mid{outline:2px solid var(--accent);outline-offset:-2px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--mut)}
+.sheetnav{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
@@ -97,6 +107,25 @@ svg text{fill:var(--mut);font:11px var(--f-num)}
     <div id="paperChart"></div>
     <div class="scroll"><table id="paperPos"></table></div>
     <div class="sub" id="paperNote"></div>
+  </section>
+
+  <section class="card" id="risk">
+    <h2>Risk and limits</h2>
+    <div class="kpis" id="riskKpis"></div>
+    <div class="grid2" style="margin-top:12px">
+      <div><h2 style="font-size:14px">Limits</h2><div class="scroll"><table id="limitsTbl"></table></div></div>
+      <div><h2 style="font-size:14px">Where the risk comes from</h2><div class="scroll"><table id="rcTbl"></table></div></div>
+    </div>
+    <h2 style="font-size:14px;margin-top:14px">Stress tests</h2>
+    <div class="scroll"><table id="stressTbl"></table></div>
+    <div class="sub" id="riskNote"></div>
+  </section>
+
+  <section class="card" id="sheets">
+    <h2>Valuation sheets</h2>
+    <div class="sub">One per target holding or new buy. The grid recomputes the base-case DCF at other discount rates and terminal growth; green cells are above today's price.</div>
+    <div class="sheetnav" id="sheetNav" role="group" aria-label="Choose a holding"></div>
+    <div id="sheetBody"></div>
   </section>
 
   <div class="grid2">
@@ -241,6 +270,8 @@ function render(){
 
   renderTrack(i);
   renderPaper(s);
+  renderRisk(s);
+  renderSheets(s);
   renderPositions();
 }
 
@@ -269,6 +300,81 @@ function renderPaper(s){
     : `<tbody><tr><td class="mut">No paper positions yet.</td></tr></tbody>`;
   $("paperNote").textContent = "Simulated fills at the US open after you approve, with transaction costs. Values use closing prices; dividends are not included for either the account or SPY.";
 }
+
+
+const bn = v => { v = num(v); if (v === null) return "—"; const a = Math.abs(v) / 1e9; return (v < 0 ? "−$" : "$") + a.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1}) + "bn"; };
+const f2 = (v, d = 2) => { v = num(v); return v === null ? "—" : v.toLocaleString(undefined, {minimumFractionDigits: d, maximumFractionDigits: d}); };
+let sheetSel = null;
+
+function renderRisk(s){
+  const r = s.risk;
+  if (!r || !r.available){
+    $("riskKpis").innerHTML = ""; ["limitsTbl", "rcTbl", "stressTbl"].forEach(id => $(id).innerHTML = "");
+    $("riskNote").textContent = r ? ("Not available: " + (r.reason || "")) : "This run predates the risk panel. Load a newer run snapshot to see it.";
+    return;
+  }
+  const ls = r.limits_summary || {};
+  const worst = (r.stress || []).filter(x => num(x.portfolio_return) !== null).sort((a, b) => a.portfolio_return - b.portfolio_return)[0];
+  const tiles = [
+    ["Limits", `${ls.PASS || 0} pass · ${ls.WARN || 0} warn · ${ls.FAIL || 0} fail`, "every configured constraint"],
+    ["Ex-ante volatility", pct(r.ex_ante_volatility), `beta ${f2(r.beta)} to SPY (daily, 3y)`],
+    ["Tracking error vs SPY", pct(r.tracking_error), `mostly the cash position (${pct(1 - (r.invested || 0), 0)})`],
+    ["1-day 99% VaR", money(r.var_99_1d_usd), `CVaR ${money(r.cvar_99_1d_usd)} (historical)`],
+    ["Concentration", `${f2(r.effective_positions, 1)} effective names`, `top 5 = ${pct(r.top5_weight)}, avg corr ${f2(r.average_correlation)}`],
+    ["Worst stress", worst ? pct(worst.portfolio_return, 1, true) : "—", worst ? worst.scenario : ""],
+  ];
+  $("riskKpis").innerHTML = tiles.map(([l, v, sub]) => `<div class="k"><div class="l">${esc(l)}</div><div class="v num" style="font-size:20px">${esc(v)}</div><div class="s">${esc(sub)}</div></div>`).join("");
+  $("limitsTbl").innerHTML = `<thead><tr><th>Check</th><th class="r">Value</th><th class="r">Limit</th><th>Status</th></tr></thead><tbody>` +
+    (r.limits || []).map(l => { const fmt = x => l.unit === "weight" ? pct(x) : (x ?? "—");
+      return `<tr><td>${esc(l.limit)}${l.detail ? `<div class="sub">${esc(l.detail)}</div>` : ""}</td><td class="r num">${esc(fmt(l.value))}</td><td class="r num">${esc(fmt(l.limit_value))}</td><td><span class="pill st-${esc(String(l.status).replace("/", ""))}">${esc(String(l.status).toLowerCase())}</span></td></tr>`; }).join("") + `</tbody>`;
+  $("rcTbl").innerHTML = `<thead><tr><th>Ticker</th><th class="r">Weight</th><th class="r">Share of risk</th><th class="r">Own vol</th><th style="width:30%"></th></tr></thead><tbody>` +
+    (r.risk_contributions || []).slice().sort((a, b) => b.risk_share - a.risk_share).map(x => `<tr><td><b>${esc(x.ticker)}</b></td><td class="r num">${pct(x.weight)}</td><td class="r num">${pct(x.risk_share, 0)}</td><td class="r num">${pct(x.standalone_vol, 0)}</td><td><div class="barT"><div class="bar" style="width:${Math.max(2, (x.risk_share || 0) * 100).toFixed(0)}%"></div></div></td></tr>`).join("") + `</tbody>`;
+  $("stressTbl").innerHTML = `<thead><tr><th>Scenario</th><th>Window</th><th class="r">Portfolio</th><th class="r">P&amp;L</th><th class="r">SPY</th></tr></thead><tbody>` +
+    (r.stress || []).map(x => `<tr><td>${esc(x.scenario)}</td><td class="mut">${esc(x.window)}</td><td class="r num ${cls(x.portfolio_return)}">${pct(x.portfolio_return, 1, true)}</td><td class="r num ${cls(x.portfolio_pnl)}">${money(x.portfolio_pnl)}</td><td class="r num mut">${num(x.spy_return) === null ? "—" : pct(x.spy_return, 1, true)}</td></tr>`).join("") + `</tbody>`;
+  $("riskNote").textContent = "Historical replays apply each holding's 3-year beta to its sector ETF to that ETF's move in the window (stock histories are too short to replay directly). Shocks use 3-year betas to SPY, long Treasuries and oil. Cash is held at 0.";
+}
+
+function football(sh){
+  const rg = sh.range_52w || {}, sc = sh.scenarios || {};
+  const rows = [["52-week range", rg.low, rg.high, .3], ["Model bear to bull", sc.bear, sc.bull, .55]];
+  const marks = [["Price", sh.price, "var(--ink)", false], ["Buy price (MOS)", sh.mos_price, "var(--good)", false], ["Consensus target", sh.consensus_target, "var(--warn)", true], ["Model base", sc.base, "var(--accent)", false]];
+  const vals = rows.flatMap(r => [r[1], r[2]]).concat(marks.map(m => m[1])).map(num).filter(v => v);
+  if (!vals.length) return "";
+  const lo = Math.min(...vals) * .97, hi = Math.max(...vals) * 1.03, W = 640, L = 130, R = 50, H = 70;
+  const x = v => L + (v - lo) / (hi - lo) * (W - L - R);
+  let o = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;display:block" role="img" aria-label="Valuation range for ${esc(sh.ticker)}">`;
+  rows.forEach(([lab, a, b, op], i) => { a = num(a); b = num(b); if (!a || !b) return; const y = 10 + i * 28;
+    o += `<text x="0" y="${y + 12}">${esc(lab)}</text><rect x="${x(a).toFixed(1)}" y="${y}" width="${Math.max(2, x(b) - x(a)).toFixed(1)}" height="16" rx="3" fill="var(--accent)" fill-opacity="${op}"/><text x="${(x(a) - 4).toFixed(1)}" y="${y + 12}" text-anchor="end">${Math.round(a).toLocaleString()}</text><text x="${(x(b) + 4).toFixed(1)}" y="${y + 12}">${Math.round(b).toLocaleString()}</text>`; });
+  marks.forEach(([lab, v, col, dash]) => { v = num(v); if (!v) return; o += `<line x1="${x(v).toFixed(1)}" x2="${x(v).toFixed(1)}" y1="4" y2="${H - 4}" stroke="${col}" stroke-width="2" ${dash ? 'stroke-dasharray="5 3"' : ""}><title>${esc(lab)} ${f2(v)}</title></line>`; });
+  o += `</svg><div class="legend">` + marks.filter(m => num(m[1])).map(([lab, v, col, dash]) => `<span><span style="display:inline-block;width:14px;border-top:2px ${dash ? "dashed" : "solid"} ${col};vertical-align:middle;margin-right:5px"></span>${esc(lab)} ${f2(v)}</span>`).join("") + `</div>`;
+  return o;
+}
+
+function renderSheets(s){
+  const sheets = s.valuation_sheets || {};
+  const order = (s.holdings || []).map(h => h.ticker).concat(Object.keys(sheets)).filter((t, k, a) => sheets[t] && a.indexOf(t) === k);
+  if (!order.length){ $("sheetNav").innerHTML = ""; $("sheetBody").innerHTML = `<p class="mut">This run predates valuation sheets. Load a newer run snapshot to see them.</p>`; return; }
+  if (!sheetSel || !order.includes(sheetSel)) sheetSel = order[0];
+  $("sheetNav").innerHTML = order.map(t => `<button type="button" data-sheet="${esc(t)}" aria-pressed="${t === sheetSel}">${esc(t)}${["REVIEW", "CRITICAL_REVIEW"].includes(sheets[t].review) ? " ·" : ""}</button>`).join("");
+  const sh = sheets[sheetSel], sc = sh.scenarios || {}, b = sh.bridge || {}, c = sh.cost_of_capital || {}, im = sh.implied || {}, mu = sh.multiples || {};
+  const up = num(sc.expected) && num(sh.price) ? sc.expected / sh.price - 1 : null;
+  const kv = rows => `<table class="kv">${rows.map(([k, v]) => `<tr><td>${esc(k)}</td><td class="r num">${esc(v)}</td></tr>`).join("")}</table>`;
+  let h = `<div class="sheet"><h3>${esc(sh.ticker)} · ${esc(sh.company_name || "")}${["REVIEW", "CRITICAL_REVIEW"].includes(sh.review) ? ` <span class="pill p-rev">${esc(String(sh.review).replace("_", " ").toLowerCase())}</span>` : ""}</h3>
+    <div class="sub">${esc(String(sh.model || "").replace(/_/g, " ").toLowerCase())} · price ${f2(sh.price)} · expected value ${f2(sc.expected)} (${pct(up, 0, true)}) · consensus ${f2(sh.consensus_target)} · confidence ${pct(sh.confidence, 0)}${sh.review_reason ? " · " + esc(sh.review_reason) : ""}</div>
+    ${football(sh)}
+    <div class="grid3">
+      <div><b style="font-size:13px">Bridge (base case)</b>${kv([["PV of 5-year cash flows", bn(b.pv_explicit_cash_flows)], ["PV of terminal value", bn(b.pv_terminal_value)], ["Enterprise value", bn(b.enterprise_value)], ["Less net debt", bn(b.net_debt)], ["Equity value", bn(b.equity_value)], ["Shares", num(b.valuation_share_units) ? Math.round(b.valuation_share_units / 1e6).toLocaleString() + "m" : "—"], ["Value per share", f2(b.intrinsic_value_per_share)], ["Terminal value share", pct(b.terminal_value_share, 0)]])}</div>
+      <div><b style="font-size:13px">Discount rate</b>${kv([["Raw beta (2y weekly)", f2(c.raw_beta)], ["Valuation beta", f2(c.valuation_beta)], ["Cost of equity", pct(c.cost_of_equity)], ["After-tax cost of debt", pct(c.after_tax_cost_of_debt)], ["Debt weight", pct(c.debt_weight, 0)], ["Discount rate (WACC)", pct(b.discount_rate ?? c.discount_rate)], ["Terminal growth", pct(b.terminal_growth ?? c.terminal_growth)]])}</div>
+      <div><b style="font-size:13px">What the price implies</b>${kv([["Market-implied " + String(im.driver || "driver").replace(/_/g, " ").toLowerCase(), pct(im.market_implied)], ["Model base assumption", pct(im.model_base)], ["Current " + (mu.metric || "multiple"), f2(mu.current, 1) + "x"], ["Exit multiple used (year 5)", f2(mu.exit_base, 1) + "x"], ["Bear / base / bull", `${f2(sc.bear, 0)} / ${f2(sc.base, 0)} / ${f2(sc.bull, 0)}`]])}</div>
+    </div>`;
+  const sens = sh.sensitivity;
+  if (sens && num(sh.price)){
+    h += `<div class="scroll" style="margin-top:8px"><table class="sens" style="width:auto"><thead><tr><th style="text-align:left">WACC \\ growth</th>${sens.terminal_growth.map(g => `<th>${(g * 100).toFixed(1)}%</th>`).join("")}</tr></thead><tbody>` +
+      sens.discount_rates.map((r, i) => `<tr><th style="text-align:left">${(r * 100).toFixed(1)}%</th>${sens.values[i].map((v, j) => `<td class="num ${num(v) ? (v > sh.price ? "c-up" : "c-dn") : ""} ${i === 2 && j === 2 ? "c-mid" : ""}">${num(v) ? Math.round(v).toLocaleString() : "—"}</td>`).join("")}</tr>`).join("") + `</tbody></table></div>`;
+  }
+  $("sheetBody").innerHTML = h + `</div>`;
+}
+$("sheetNav").addEventListener("click", e => { const b = e.target.closest("button[data-sheet]"); if (!b) return; sheetSel = b.dataset.sheet; render(); });
 
 /* model forward track record, same method as ledger/track_record.csv */
 function trackRows(upto){
