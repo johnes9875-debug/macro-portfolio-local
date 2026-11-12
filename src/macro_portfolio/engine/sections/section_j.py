@@ -1068,7 +1068,7 @@ if J_ATTRIBUTION_AVAILABLE:
     J_PORTFOLIO_STATE_MODE = str(globals().get("PORTFOLIO_STATE_MODE", "MODEL")).upper()
 
     if (
-        J_PORTFOLIO_STATE_MODE == "REAL"
+        J_PORTFOLIO_STATE_MODE in ("REAL", "PAPER")
         and "previous_previous_weight" in J_LIVE_ATTRIBUTION.columns
         and J_LIVE_ATTRIBUTION["previous_previous_weight"].notna().any()
     ):

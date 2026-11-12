@@ -90,6 +90,15 @@ svg text{fill:var(--mut);font:11px var(--f-num)}
 
   <section class="card" id="ticket"><h2>Trade ticket</h2><div class="scroll" id="ticketBody"></div><div class="sub" id="notTraded"></div></section>
 
+  <section class="card" id="paper">
+    <h2>Paper account</h2>
+    <div class="kpis" id="paperKpis"></div>
+    <div id="paperAwait"></div>
+    <div id="paperChart"></div>
+    <div class="scroll"><table id="paperPos"></table></div>
+    <div class="sub" id="paperNote"></div>
+  </section>
+
   <div class="grid2">
     <section class="card" id="attention"><h2>Needs your attention</h2><div class="att" id="attBody"></div></section>
     <section class="card" id="context"><h2>Macro context</h2><div class="sub" id="regimeLine"></div><div class="scroll"><table id="regimeTbl"></table></div></section>
@@ -231,7 +240,34 @@ function render(){
     (s.watchlist || []).slice(0, 8).map(w => `<tr><td><b>${esc(w.ticker)}</b> <span class="mut">${esc(w.sector_ticker)}</span></td><td class="r num">${px(w.current_price)}</td><td class="r num">${px(w.mos_price_threshold)}</td><td class="r num">${pct(w.distance_to_mos_pct)}</td></tr>`).join("") + `</tbody>`;
 
   renderTrack(i);
+  renderPaper(s);
   renderPositions();
+}
+
+function renderPaper(s){
+  const pa = s.paper;
+  if (!pa){ $("paperKpis").innerHTML = ""; $("paperAwait").innerHTML = ""; $("paperChart").innerHTML = ""; $("paperPos").innerHTML = "";
+    $("paperNote").textContent = "This run has no paper account yet. It starts after the first run with paper trading on; load that run's snapshot here."; return; }
+  const pf = pa.performance || {};
+  const tiles = [
+    ["Paper NAV", money(pa.nav), `started with ${money(pa.initial_cash)}`],
+    ["Return since start", pct(pf.nav_return, 2, true), `SPY ${pct(pf.spy_return, 2, true)} since ${pf.since || "—"}`],
+    ["Cash", money(pa.cash), `valued at ${pa.last_marked_session || "—"}`],
+    ["Open orders", String((pa.pending_orders || []).length), "fill at the next US open"],
+  ];
+  $("paperKpis").innerHTML = tiles.map(([l, v, sub]) => `<div class="k"><div class="l">${esc(l)}</div><div class="v num">${esc(v)}</div><div class="s">${esc(sub)}</div></div>`).join("");
+  const aw = pa.awaiting_approval;
+  $("paperAwait").innerHTML = aw ? `<div class="banner b-warn" style="margin-top:10px"><span>${(aw.orders || []).filter(o => o.action === "EXECUTE").length} orders waiting for your approval in ledger/paper/orders/${esc(aw.file)}. Edit and approve them on your PC (Streamlit Paper trading tab or scripts\\paper_approve.bat).</span></div>` : "";
+  const nh = pa.nav_history || [];
+  if (nh.length >= 2){
+    const b0 = nh[0], rows = nh.slice(1).map((r, j) => ({from: nh[j].session, to: r.session, cum: r.nav / b0.nav - 1, cumS: (r.spy_close && b0.spy_close) ? r.spy_close / b0.spy_close - 1 : 0}));
+    drawChart(rows, "paperChart", "Paper", "Paper account versus SPY since the account started");
+  } else $("paperChart").innerHTML = "";
+  const pos = pa.positions || [];
+  $("paperPos").innerHTML = pos.length ? `<thead><tr><th>Ticker</th><th class="r">Shares</th><th class="r">Avg cost</th><th class="r">Price</th><th class="r">Value</th><th class="r">Weight</th><th class="r">Unrealized P&amp;L</th></tr></thead><tbody>` +
+    pos.map(p => `<tr><td><b>${esc(p.ticker)}</b></td><td class="r num">${(+p.shares).toLocaleString()}</td><td class="r num">${px(p.avg_cost)}</td><td class="r num">${px(p.price)}</td><td class="r num">${money(p.market_value)}</td><td class="r num">${pct(p.weight)}</td><td class="r num ${cls(p.unrealized_pl)}">${money(p.unrealized_pl)}</td></tr>`).join("") + `</tbody>`
+    : `<tbody><tr><td class="mut">No paper positions yet.</td></tr></tbody>`;
+  $("paperNote").textContent = "Simulated fills at the US open after you approve, with transaction costs. Values use closing prices; dividends are not included for either the account or SPY.";
 }
 
 /* model forward track record, same method as ledger/track_record.csv */
@@ -267,8 +303,8 @@ function renderTrack(i){
   drawChart(rows);
 }
 
-function drawChart(rows){
-  const box = $("trackChart"); const W = Math.max(280, Math.min(box.clientWidth || 600, 1080)), H = 150, L = 46, R = 112, T = 12, B = 22;
+function drawChart(rows, target = "trackChart", label = "Model", aria = "Cumulative return of the model versus SPY"){
+  const box = $(target); const W = Math.max(280, Math.min(box.clientWidth || 600, 1080)), H = 150, L = 46, R = 112, T = 12, B = 22;
   const pts = [{to: rows[0].from, cum: 0, cumS: 0}, ...rows];
   const vals = pts.flatMap(p => [p.cum, p.cumS]).concat([0]);
   let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi - lo) * 0.15 || 0.005; lo -= pad; hi += pad;
@@ -277,13 +313,13 @@ function drawChart(rows){
   const area = `${x(0)},${y(0)} ${line("cum")} ${x(pts.length - 1)},${y(0)}`;
   const ticks = [lo + pad, 0, hi - pad].filter((v, k, a) => a.indexOf(v) === k);
   const e = pts.length - 1;
-  box.innerHTML = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative return of the model versus SPY">
+  box.innerHTML = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(aria)}">
     ${ticks.map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${pct(v, 1, true)}</text>`).join("")}
     <polygon points="${area}" fill="var(--accent)" fill-opacity=".12"/>
     <polyline points="${line("cumS")}" fill="none" stroke="var(--mut)" stroke-width="1.5" stroke-dasharray="4 3"/>
     <polyline points="${line("cum")}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
     <circle cx="${x(e)}" cy="${y(pts[e].cum)}" r="4" fill="var(--accent)"/>
-    <text x="${x(e) + 8}" y="${y(pts[e].cum) + 4}" style="fill:var(--accent)">Model ${pct(pts[e].cum, 2, true)}</text>
+    <text x="${x(e) + 8}" y="${y(pts[e].cum) + 4}" style="fill:var(--accent)">${esc(label)} ${pct(pts[e].cum, 2, true)}</text>
     <text x="${x(e) + 8}" y="${y(pts[e].cumS) + 4}">SPY ${pct(pts[e].cumS, 2, true)}</text>
     ${pts.map((p, j) => `<text x="${x(j)}" y="${H - 6}" text-anchor="${j === 0 ? "start" : j === e ? "end" : "middle"}">${esc(String(p.to).slice(5))}</text>`).join("")}
   </svg>`;

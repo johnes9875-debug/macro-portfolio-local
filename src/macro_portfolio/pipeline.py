@@ -94,6 +94,11 @@ def _record_ledger_and_cockpit(ns: dict, root: Path, run_dir: Path) -> None:
     """Non-blocking post-success steps: run ledger, one-page cockpit, git push."""
     local_cfg = ns.get("CONFIG", {}).get("local", {}) or {}
     log = ns["logger"]
+    try:
+        from .paper import after_run as paper_after_run
+        paper_after_run(root, run_dir, ns.get("CONFIG", {}), log=log.info)
+    except Exception as paper_exc:
+        log.warning("Paper account step failed (non-blocking): %s", paper_exc)
     if not bool(local_cfg.get("record_ledger", True)):
         return
     try:

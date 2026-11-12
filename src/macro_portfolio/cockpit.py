@@ -154,6 +154,35 @@ def render_cockpit(snap: dict, track: pd.DataFrame | None = None, runs: pd.DataF
         out.append(f"<p class='sub'>Not traded: {nt}.</p>")
     out.append("<p class='sub'>“Below buy price” = how far the price sits under the margin-of-safety entry price. Higher is cheaper.</p>")
 
+    # ---- paper account
+    pa = snap.get("paper")
+    if pa:
+        out.append("<h2>Paper account</h2>")
+        perf = pa.get("performance") or {}
+        out.append("<div class='kpis'>")
+        for label, val, sub in [
+            ("Paper NAV", _money(pa.get("nav")), f"started with {_money(pa.get('initial_cash'))}"),
+            ("Return since start", _pct(perf.get("nav_return"), 2, True), f"SPY {_pct(perf.get('spy_return'), 2, True)} since {perf.get('since') or '—'}"),
+            ("Cash", _money(pa.get("cash")), f"valued at {pa.get('last_marked_session') or '—'}"),
+            ("Open orders", str(len(pa.get("pending_orders") or [])), "fill at the next US open"),
+        ]:
+            out.append(f"<div class='k'><div class='l'>{label}</div><div class='v'>{_e(val)}</div><div class='s'>{_e(sub)}</div></div>")
+        out.append("</div>")
+        aw = pa.get("awaiting_approval")
+        if aw:
+            out.append(f"<div class='banner warn'><span>Orders waiting for your approval: ledger/paper/orders/{_e(aw['file'])}. "
+                       "Edit it if you want, then run scripts\\paper_approve.bat (or use the Streamlit Paper trading tab).</span></div>")
+        if pa.get("positions"):
+            out.append("<table><tr><th>Ticker</th><th class='r'>Shares</th><th class='r'>Avg cost</th><th class='r'>Price</th>"
+                       "<th class='r'>Value</th><th class='r'>Weight</th><th class='r'>Unrealized P&amp;L</th></tr>")
+            for p in pa["positions"]:
+                out.append(f"<tr><td><b>{_e(p['ticker'])}</b></td><td class='r'>{p['shares']:,.0f}</td><td class='r'>{p['avg_cost']:,.2f}</td>"
+                           f"<td class='r'>{p['price']:,.2f}</td><td class='r'>{_money(p['market_value'])}</td><td class='r'>{_pct(p.get('weight'))}</td>"
+                           f"<td class='r {_cls(p['unrealized_pl'])}'>{_money(p['unrealized_pl'])}</td></tr>")
+            out.append("</table>")
+        else:
+            out.append("<p class='sub'>No paper positions yet.</p>")
+
     # ---- attention + context
     out.append("<div class='grid2'><div><h2>Needs your attention</h2><div class='list'>")
     warn = [f for f in snap["flags"] if f.get("severity") in ("CRITICAL", "WARNING")]

@@ -15,6 +15,13 @@
 - Record what you actually bought in `ledger/actual_holdings.csv` or in the Streamlit app
   (`scripts\start_dashboard.bat` → "My actual holdings").
 
+## Paper trading (monthly)
+
+The system runs a $1,000,000 paper account (`execution.portfolio_state_mode: PAPER`).
+After the first run of each month it proposes orders in `ledger/paper/orders/`; you edit
+and approve them (Streamlit **Paper trading** tab or `scripts\paper_approve.bat`), and the
+next run fills them at the US open after your approval. See `ledger/paper/README.md`.
+
 ## One supported workflow
 
 1. Extract the ZIP into its own folder.

@@ -6955,11 +6955,21 @@ elif PORTFOLIO_STATE_MODE == "MODEL":
     else:
         CURRENT_PORTFOLIO_WEIGHTS = pd.DataFrame({"ticker": ["CASH"], "current_weight": [1.0]})
         PORTFOLIO_STATE_SOURCE = "FIRST_MODEL_RUN_ALL_CASH"
+elif PORTFOLIO_STATE_MODE == "PAPER":
+    # Paper-trading account (macro_portfolio.paper): start from what the paper
+    # account actually holds after its simulated fills. Not real money.
+    PORTFOLIO_PAPER_PATH = Path(globals().get("PROJECT_ROOT", ".")) / "ledger" / "paper" / "optimizer_state.csv"
+    if PORTFOLIO_PAPER_PATH.exists():
+        CURRENT_PORTFOLIO_WEIGHTS = _normalize_portfolio_state(pd.read_csv(PORTFOLIO_PAPER_PATH))
+        PORTFOLIO_STATE_SOURCE = str(PORTFOLIO_PAPER_PATH)
+    else:
+        CURRENT_PORTFOLIO_WEIGHTS = pd.DataFrame({"ticker": ["CASH"], "current_weight": [1.0]})
+        PORTFOLIO_STATE_SOURCE = "PAPER_ACCOUNT_NOT_STARTED_ALL_CASH"
 elif PORTFOLIO_STATE_MODE == "ZERO":
     CURRENT_PORTFOLIO_WEIGHTS = pd.DataFrame({"ticker": ["CASH"], "current_weight": [1.0]})
     PORTFOLIO_STATE_SOURCE = "INTENTIONAL_ZERO_PORTFOLIO"
 else:
-    raise RuntimeError("portfolio_state_mode must be MODEL, REAL, or ZERO.")
+    raise RuntimeError("portfolio_state_mode must be MODEL, PAPER, REAL, or ZERO.")
 
 print("=" * 120)
 print("G4A — PORTFOLIO STATE")

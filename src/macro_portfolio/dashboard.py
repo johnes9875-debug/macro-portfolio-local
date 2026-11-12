@@ -11,6 +11,7 @@ import streamlit.components.v1 as components
 
 from macro_portfolio.cockpit import render_cockpit
 from macro_portfolio.ledger import build_snapshot, build_track_record, git_push_ledger
+from macro_portfolio import paper as paper_mod
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 STATE_DIR = PROJECT_ROOT / "outputs" / "state"
@@ -74,8 +75,8 @@ else:
 snap = snapshot_for(run_dir, run_id, session)
 track = read_csv("track_record.csv")
 
-tab_today, tab_history, tab_actual, tab_detail, tab_system = st.tabs(
-    ["Today", "History and track record", "My actual holdings", "Detail tables", "System"])
+tab_today, tab_paper, tab_history, tab_actual, tab_detail, tab_system = st.tabs(
+    ["Today", "Paper trading", "History and track record", "My actual holdings", "Detail tables", "System"])
 
 # ---------------------------------------------------------------- today
 with tab_today:
@@ -85,6 +86,73 @@ with tab_today:
     if brief.exists():
         with st.expander("What changed since the previous run"):
             st.markdown(brief.read_text(encoding="utf-8"))
+
+# ---------------------------------------------------------------- paper trading
+with tab_paper:
+    pa = paper_mod.summary(PROJECT_ROOT)
+    if not pa:
+        st.info("The paper account starts after the first successful run with paper.enabled: true, "
+                "or run scripts\\paper_propose.bat now.")
+    else:
+        perf = pa.get("performance") or {}
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Paper NAV", f"${pa['nav']:,.0f}" if pa.get("nav") else "—")
+        c2.metric("Return since start", f"{perf['nav_return']:+.2%}" if perf.get("nav_return") is not None else "—",
+                  None if perf.get("spy_return") is None else f"SPY {perf['spy_return']:+.2%}")
+        c3.metric("Cash", f"${pa['cash']:,.0f}")
+        c4.metric("Open orders", len(pa.get("pending_orders") or []))
+
+    proposals = sorted((LEDGER / "paper" / "orders").glob("*_proposed.csv")) if (LEDGER / "paper" / "orders").exists() else []
+    latest = proposals[-1] if proposals else None
+    approved = latest.with_name(latest.name.replace("_proposed", "_approved")) if latest else None
+    if latest and not approved.exists():
+        st.subheader(f"Orders to review: {latest.name}")
+        st.caption("Change shares, set action to SKIP, add a limit_price or fill_price, or add rows. "
+                   "Save keeps your edits; Approve locks them in. They fill at the next US market open after approval.")
+        orders = paper_mod.read_orders(latest)
+        edit_cols = ["order_id", "ticker", "side", "shares", "action", "limit_price", "fill_price",
+                     "ref_price", "est_value", "target_weight", "reason", "flag", "note"]
+        edited = st.data_editor(
+            orders[edit_cols], num_rows="dynamic", use_container_width=True, key="paper_orders",
+            column_config={
+                "side": st.column_config.SelectboxColumn(options=["BUY", "SELL"]),
+                "action": st.column_config.SelectboxColumn(options=["EXECUTE", "SKIP"]),
+            },
+            disabled=["order_id", "ref_price", "est_value", "target_weight", "reason", "flag"],
+        )
+        live = edited[edited["action"] == "EXECUTE"]
+        buys = float((live.loc[live["side"] == "BUY", "shares"] * live.loc[live["side"] == "BUY", "ref_price"]).sum())
+        sells = float((live.loc[live["side"] == "SELL", "shares"] * live.loc[live["side"] == "SELL", "ref_price"]).sum())
+        st.caption(f"At reference prices: buys ${buys:,.0f}, sells ${sells:,.0f}, net cash needed ${buys - sells:,.0f}"
+                   + (f" (cash ${pa['cash']:,.0f})" if pa else ""))
+        a, b = st.columns(2)
+        header = "".join(l for l in latest.read_text(encoding="utf-8").splitlines(True) if l.startswith("#"))
+        if a.button("Save edits"):
+            latest.write_text(header + edited.to_csv(index=False), encoding="utf-8")
+            st.success("Saved")
+        if b.button("Approve orders", type="primary"):
+            latest.write_text(header + edited.to_csv(index=False), encoding="utf-8")
+            try:
+                out = paper_mod.approve_orders(PROJECT_ROOT, latest)
+                st.success(f"Approved: {out.name}. {git_push_ledger(PROJECT_ROOT, 'paper: approve ' + latest.name)}")
+            except Exception as exc:
+                st.error(str(exc))
+    elif latest:
+        st.caption(f"Latest orders ({approved.name}) are approved. The next month's orders appear after the first run of next month.")
+        st.dataframe(pd.read_csv(approved), use_container_width=True, hide_index=True)
+
+    if pa:
+        if pa.get("nav_history"):
+            nh = pd.DataFrame(pa["nav_history"])
+            nh["Paper account"] = nh["nav"] / nh["nav"].iloc[0] - 1
+            nh["SPY"] = nh["spy_close"] / nh["spy_close"].iloc[0] - 1
+            nh["session"] = pd.to_datetime(nh["session"])
+            st.plotly_chart(px.line(nh, x="session", y=["Paper account", "SPY"], markers=True,
+                                    title="Paper account vs SPY (price return)"), use_container_width=True)
+        st.subheader("Positions")
+        st.dataframe(pd.DataFrame(pa.get("positions") or []), use_container_width=True, hide_index=True)
+        st.subheader("Recent fills")
+        st.dataframe(pd.DataFrame(pa.get("recent_fills") or []), use_container_width=True, hide_index=True)
 
 # ---------------------------------------------------------------- history
 with tab_history:

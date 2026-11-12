@@ -49,7 +49,9 @@ execution:
   transaction_cost_rate: 0.001
   min_trade_weight: 0.005
   max_adv_participation: 0.1
-  portfolio_state_mode: MODEL
+  # MODEL: assume last targets were filled. PAPER: start from ledger/paper account.
+  # REAL: start from outputs/stocks/portfolio_state/actual_holdings.csv (real money).
+  portfolio_state_mode: PAPER
   assume_model_targets_executed: true
 risk:
   trading_days: 252
@@ -331,3 +333,15 @@ local:
   # Run ledger (ledger/): record every successful run; optionally git-push it.
   record_ledger: true
   auto_push_ledger: true
+paper:
+  # Paper-trading account (see ledger/paper/README.md). Orders are proposed after
+  # the first successful run of each month and only fill after you approve them.
+  enabled: true
+  initial_cash: 1000000
+  rebalance_frequency: monthly
+  whole_shares: true
+  order_expiry_sessions: 5
+  # Interest on idle cash; set to what your broker would pay (0 = conservative).
+  cash_annual_rate: 0.0
+  # Proposed orders smaller than this share of NAV are marked SKIP (exits always kept).
+  min_order_value_pct: 0.0025

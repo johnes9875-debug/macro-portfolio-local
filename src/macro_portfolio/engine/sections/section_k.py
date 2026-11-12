@@ -2129,7 +2129,7 @@ print(
 # ==================================================================================================
 
 PIPELINE_OPERATIONAL_READY = bool(globals().get("SYSTEM_PRODUCTION_READY", False))
-LIVE_MODEL_PORTFOLIO_READY = bool(PIPELINE_OPERATIONAL_READY and globals().get("PORTFOLIO_STATE_MODE", "MODEL") in ["MODEL", "REAL"])
+LIVE_MODEL_PORTFOLIO_READY = bool(PIPELINE_OPERATIONAL_READY and globals().get("PORTFOLIO_STATE_MODE", "MODEL") in ["MODEL", "PAPER", "REAL"])
 
 if "G_FINAL_TRADE_PLAN" in globals() and "liquidity_check" in G_FINAL_TRADE_PLAN.columns:
     _tp = G_FINAL_TRADE_PLAN.copy()
@@ -2302,11 +2302,11 @@ k3_check(
     ),
 )
 
-# 6) Portfolio state must come from explicit MODEL/REAL/ZERO mode, never an implicit stale snapshot.
+# 6) Portfolio state must come from explicit MODEL/PAPER/REAL/ZERO mode, never an implicit stale snapshot.
 _k3_mode = str(cfg(["execution", "portfolio_state_mode"], "MODEL")).upper()
 k3_check(
     "Portfolio-state mode is explicit",
-    _k3_mode in {"MODEL", "REAL", "ZERO"},
+    _k3_mode in {"MODEL", "PAPER", "REAL", "ZERO"},
     f"mode={_k3_mode}",
 )
 

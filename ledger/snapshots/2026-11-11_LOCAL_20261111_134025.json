@@ -568,5 +568,95 @@
  "benchmark": {
   "ticker": "SPY",
   "price": 759.809998
+ },
+ "paper": {
+  "initial_cash": 1000000.0,
+  "cash": 1000000.0,
+  "last_marked_session": null,
+  "nav": 1000000.0,
+  "performance": {
+   "since": "2026-11-11",
+   "nav_return": 0.0,
+   "spy_return": 0.0
+  },
+  "positions": [],
+  "nav_history": [
+   {
+    "session": "2026-11-11",
+    "nav": 1000000.0,
+    "invested": 0.0,
+    "spy_close": 759.809998
+   }
+  ],
+  "pending_orders": [],
+  "awaiting_approval": {
+   "file": "2026-11-11_proposed.csv",
+   "orders": [
+    {
+     "ticker": "MO",
+     "side": "BUY",
+     "shares": 1292.0,
+     "action": "EXECUTE",
+     "ref_price": 77.39,
+     "est_value": 99987.88,
+     "flag": "valuation review"
+    },
+    {
+     "ticker": "KDP",
+     "side": "BUY",
+     "shares": 2614.0,
+     "action": "EXECUTE",
+     "ref_price": 38.25,
+     "est_value": 99985.5,
+     "flag": "valuation review"
+    },
+    {
+     "ticker": "CPAY",
+     "side": "BUY",
+     "shares": 216.0,
+     "action": "EXECUTE",
+     "ref_price": 461.95,
+     "est_value": 99781.2,
+     "flag": null
+    },
+    {
+     "ticker": "NEM",
+     "side": "BUY",
+     "shares": 651.0,
+     "action": "EXECUTE",
+     "ref_price": 118.47,
+     "est_value": 77123.97,
+     "flag": null
+    },
+    {
+     "ticker": "FDS",
+     "side": "BUY",
+     "shares": 161.0,
+     "action": "EXECUTE",
+     "ref_price": 334.88,
+     "est_value": 53915.68,
+     "flag": "valuation review"
+    },
+    {
+     "ticker": "RMD",
+     "side": "BUY",
+     "shares": 123.0,
+     "action": "EXECUTE",
+     "ref_price": 238.53,
+     "est_value": 29339.19,
+     "flag": null
+    },
+    {
+     "ticker": "EL",
+     "side": "BUY",
+     "shares": 81.0,
+     "action": "EXECUTE",
+     "ref_price": 112.33,
+     "est_value": 9098.73,
+     "flag": null
+    }
+   ]
+  },
+  "recent_fills": []
  }
 }

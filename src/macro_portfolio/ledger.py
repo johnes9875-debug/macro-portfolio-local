@@ -364,6 +364,13 @@ def record_run(project_root: Path, run_dir: Path, min_weight: float = DEFAULT_MI
     d = ledger_dir(project_root)
     snap = build_snapshot(project_root, run_dir, min_weight=min_weight)
     rid, sess = snap["run_id"], snap["market_session"]
+    try:
+        from .paper import summary as paper_summary
+        paper = paper_summary(project_root)
+        if paper:
+            snap["paper"] = paper
+    except Exception:
+        pass
 
     (d / "snapshots" / f"{sess}_{rid}.json").write_text(json.dumps(snap, indent=1), encoding="utf-8")
 
