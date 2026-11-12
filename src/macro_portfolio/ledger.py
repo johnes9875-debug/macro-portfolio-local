@@ -279,6 +279,15 @@ def build_snapshot(project_root: Path, run_dir: Path, min_weight: float = DEFAUL
     price_tickers = set(hold["ticker"]) if not hold.empty else set()
     if not t.empty:
         price_tickers |= set(t.loc[t["previous_weight"] > 0, "ticker"])
+    # Also price the previous recorded run's holdings so the forward track record
+    # can mark them at this run even if they are no longer in the trade plan.
+    try:
+        prior = sorted(p for p in (Path(project_root) / "ledger" / "snapshots").glob("*.json")
+                       if p.name[:10] < str(session)[:10])
+        if prior:
+            price_tickers |= {h["ticker"] for h in json.loads(prior[-1].read_text(encoding="utf-8")).get("holdings", [])}
+    except Exception:
+        pass
     price_tickers.discard("CASH")
     prices = {}
     for tk in sorted(price_tickers):

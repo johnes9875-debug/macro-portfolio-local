@@ -195,7 +195,7 @@ function render(){
   const sel = $("runSel");
   sel.innerHTML = runs.map(r => `<option value="${esc(keyOf(r))}">${esc(r.market_session)} · ${esc(r.run_id)}</option>`).reverse().join("");
   sel.value = keyOf(s);
-  $("asof").textContent = `Market data as of ${s.market_session} · ${runs.length} run${runs.length > 1 ? "s" : ""} recorded` + (prev ? ` · compared with ${prev.market_session}` : "");
+  $("asof").textContent = `Market data as of ${s.market_session} · ${runs.length} run${runs.length > 1 ? "s" : ""} recorded` + (prev ? ` · compared with ${prev.market_session} (${prev.run_id})` : "") + (s.preview_note ? ` · ${s.preview_note}` : "");
 
   const st = s.state || {}, k = s.kpis || {}, r = s.regime || {};
   const model = String(st.portfolio_state_mode || "").toUpperCase() === "MODEL" || !st.portfolio_state_is_actual;
@@ -378,9 +378,13 @@ $("sheetNav").addEventListener("click", e => { const b = e.target.closest("butto
 
 /* model forward track record, same method as ledger/track_record.csv */
 function trackRows(upto){
+  // one run per market session (the selected run wins for its own date), like ledger/track_record.csv
+  const bySess = new Map();
+  runs.slice(0, upto + 1).forEach(r => bySess.set(r.market_session, r));
+  const seq = [...bySess.values()];
   const out = []; let cum = 1, cumS = 1;
-  for (let j = 1; j <= upto; j++){
-    const a = runs[j - 1], b = runs[j];
+  for (let j = 1; j < seq.length; j++){
+    const a = seq[j - 1], b = seq[j];
     let ret = 0; const miss = [];
     for (const h of a.holdings || []){
       const p0 = num((a.prices || {})[h.ticker]), p1 = num((b.prices || {})[h.ticker]);
