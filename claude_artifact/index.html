@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Macro Portfolio Cockpit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  /* layout: one scan column — status, numbers, ticket, attention|context, sectors, holdings|watchlist, track record, my positions */
+  --bg:#f7f8f7; --panel:#ffffff; --ink:#18201f; --mut:#5d6866; --line:#dfe4e2; --accent:#0f6e6a;
+  --good:#2f6b12; --good-bg:#e8f2dc; --bad:#a32d2d; --bad-bg:#fbe9e9; --warn:#7a4a06; --warn-bg:#faedd6; --info-bg:#e3f1f0;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-num:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#121615; --panel:#1a1f1e; --ink:#e7ecea; --mut:#9aa6a3; --line:#2b3331; --accent:#5ec4bd;
+  --good:#9ccc6a; --good-bg:#203113; --bad:#f19a9a; --bad-bg:#3c1818; --warn:#f3c56e; --warn-bg:#3a2706; --info-bg:#123230; color-scheme: dark; } }
+:root[data-theme="dark"]{
+  --bg:#121615; --panel:#1a1f1e; --ink:#e7ecea; --mut:#9aa6a3; --line:#2b3331; --accent:#5ec4bd;
+  --good:#9ccc6a; --good-bg:#203113; --bad:#f19a9a; --bad-bg:#3c1818; --warn:#f3c56e; --warn-bg:#3a2706; --info-bg:#123230; color-scheme: dark; }
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body)}
+.wrap{max-width:1120px;margin:0 auto;padding:20px 16px 48px;display:grid;gap:22px}
+h1{font-size:22px;font-weight:600;margin:0;text-wrap:balance}
+h2{font-size:15px;font-weight:600;margin:0 0 10px;text-wrap:balance}
+.sub{color:var(--mut);font-size:13px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+select,button,input{font:inherit;color:var(--ink)}
+select,input{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+button{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:6px 14px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--panel)}
+.banner{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:10px 14px;border-radius:8px;font-size:13px}
+.b-warn{background:var(--warn-bg);color:var(--warn)} .b-ok{background:var(--good-bg);color:var(--good)} .b-info{background:var(--info-bg);color:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.k{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.k .l{font-size:12px;color:var(--mut)} .k .v{font-size:26px;font-weight:500} .k .s{font-size:12px;color:var(--mut)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:22px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-weight:500;color:var(--mut);text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right} tr:last-child td{border-bottom:0}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:5px;white-space:nowrap}
+.p-buy{background:var(--good-bg);color:var(--good)} .p-sell{background:var(--bad-bg);color:var(--bad)}
+.p-rev{background:var(--warn-bg);color:var(--warn)} .p-n{background:var(--info-bg);color:var(--accent)}
+.pos{color:var(--good)} .neg{color:var(--bad)} .mut{color:var(--mut)}
+.att{display:grid;gap:0} .att div{padding:7px 0;border-bottom:1px solid var(--line);font-size:13px} .att div:last-child{border:0}
+.barT{background:var(--line);border-radius:4px;height:8px} .bar{background:var(--accent);border-radius:4px;height:8px}
+.form{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-top:10px}
+.form label{display:grid;gap:2px;font-size:12px;color:var(--mut)}
+.form input{width:120px}
+.msg{font-size:13px;min-height:1.2em}
+svg text{fill:var(--mut);font:11px var(--f-num)}
+.hidden{display:none}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top" id="header">
+    <div>
+      <h1>Macro portfolio cockpit</h1>
+      <div class="sub" id="asof">Loading runs…</div>
+    </div>
+    <div class="controls">
+      <label class="sub" for="runSel">Run</label>
+      <select id="runSel" aria-label="Select run"></select>
+      <div class="seg" role="group" aria-label="Portfolio view">
+        <button id="vModel" aria-pressed="true">Model</button>
+        <button id="vActual" aria-pressed="false">My actual</button>
+      </div>
+      <button id="loadBtn" title="Add a run from ledger/snapshots/*.json">Load new run</button>
+      <input type="file" id="fileIn" accept=".json,application/json" multiple class="hidden">
+    </div>
+  </div>
+  <div class="msg" id="loadMsg" role="status"></div>
+
+  <div id="banner"></div>
+  <div class="kpis" id="kpis"></div>
+
+  <section class="card" id="ticket"><h2>Trade ticket</h2><div class="scroll" id="ticketBody"></div><div class="sub" id="notTraded"></div></section>
+
+  <div class="grid2">
+    <section class="card" id="attention"><h2>Needs your attention</h2><div class="att" id="attBody"></div></section>
+    <section class="card" id="context"><h2>Macro context</h2><div class="sub" id="regimeLine"></div><div class="scroll"><table id="regimeTbl"></table></div></section>
+  </div>
+
+  <section class="card" id="sectors"><h2>Sector ranking</h2><div class="scroll"><table id="secTbl"></table></div></section>
+
+  <div class="grid2">
+    <section class="card" id="holdings"><h2 id="holdTitle">Target holdings</h2><div class="scroll"><table id="holdTbl"></table></div></section>
+    <section class="card" id="watch"><h2>Closest to a buy</h2><div class="scroll"><table id="watchTbl"></table></div></section>
+  </div>
+
+  <section class="card" id="track"><h2 id="trackTitle">Track record</h2><div id="trackChart"></div><div class="scroll"><table id="trackTbl"></table></div><div class="sub" id="trackNote"></div></section>
+
+  <section class="card" id="positions">
+    <h2>My actual positions</h2>
+    <div class="sub">What you really hold. Saved here for every device you sign in on. Copy as CSV to paste into ledger/actual_holdings.csv on GitHub.</div>
+    <div class="scroll"><table id="posTbl"></table></div>
+    <form class="form" id="posForm" autocomplete="off">
+      <label for="pDate">Date<input id="pDate" type="date" required></label>
+      <label for="pTicker">Ticker<input id="pTicker" required placeholder="MO" maxlength="12"></label>
+      <label for="pShares">Shares<input id="pShares" type="number" step="any" required placeholder="1290"></label>
+      <label for="pCost">Avg cost<input id="pCost" type="number" step="any" required placeholder="77.40"></label>
+      <label for="pNote">Note<input id="pNote" placeholder="after 11 Nov run" maxlength="80"></label>
+      <button type="submit" id="pAdd">Add position</button>
+      <button type="button" id="pCopy">Copy as CSV</button>
+      <button type="button" id="pImport">Import CSV</button>
+      <input type="file" id="csvIn" accept=".csv,text/csv" class="hidden">
+    </form>
+    <div class="msg" id="posMsg" role="status"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num = v => (v === null || v === undefined || v === "" || isNaN(+v)) ? null : +v;
+const pct = (v, d = 1, sign = false) => { v = num(v); if (v === null) return "—"; const x = (v * 100).toFixed(d); return (sign && v > 0 ? "+" : "") + x + "%"; };
+const money = v => { v = num(v); if (v === null) return "—"; const a = Math.abs(v).toLocaleString(undefined, {maximumFractionDigits: 0}); return (v < 0 ? "−$" : "$") + a; };
+const px = v => { v = num(v); return v === null ? "—" : v.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}); };
+const cls = v => { v = num(v); return v === null ? "" : (v > 0 ? "pos" : v < 0 ? "neg" : ""); };
+const REV = s => s === "REVIEW" || s === "CRITICAL_REVIEW";
+const SIDE = {BUY: ["Buy", "p-buy"], ADD: ["Add", "p-buy"], SELL: ["Sell", "p-sell"], TRIM: ["Trim", "p-sell"]};
+
+let db = null, canWrite = true;
+let runs = [];             // snapshots sorted by session
+let selected = null;       // run key
+let view = "model";
+let positions = [];        // actual positions
+let posVersionDoc = null;
+
+const keyOf = s => `${s.market_session}_${s.run_id}`;
+function validSnap(s){ return s && typeof s === "object" && typeof s.run_id === "string" && /^\d{4}-\d{2}-\d{2}$/.test(String(s.market_session || "")) && s.kpis && Array.isArray(s.holdings) && Array.isArray(s.trades); }
+
+/* ---------------- render ---------------- */
+function render(){
+  if (!runs.length){
+    $("asof").textContent = db ? "No runs stored yet. Use Load new run with a file from ledger/snapshots." : "Waiting for the run store…";
+    return;
+  }
+  const i = Math.max(0, runs.findIndex(r => keyOf(r) === selected));
+  const s = runs[i], prev = i > 0 ? runs[i - 1] : null;
+  const sel = $("runSel");
+  sel.innerHTML = runs.map(r => `<option value="${esc(keyOf(r))}">${esc(r.market_session)} · ${esc(r.run_id)}</option>`).reverse().join("");
+  sel.value = keyOf(s);
+  $("asof").textContent = `Market data as of ${s.market_session} · ${runs.length} run${runs.length > 1 ? "s" : ""} recorded` + (prev ? ` · compared with ${prev.market_session}` : "");
+
+  const st = s.state || {}, k = s.kpis || {}, r = s.regime || {};
+  const model = String(st.portfolio_state_mode || "").toUpperCase() === "MODEL" || !st.portfolio_state_is_actual;
+  $("banner").innerHTML = view === "actual"
+    ? `<div class="banner b-info"><span>Showing your recorded positions against the model.</span><span>${positions.length} position${positions.length === 1 ? "" : "s"} recorded</span></div>`
+    : (model || !st.real_money_execution_ready)
+      ? `<div class="banner b-warn"><span>Model portfolio, not your actual holdings.${st.real_money_execution_ready ? "" : " Real-money execution is not marked ready."}</span><span>Switch to My actual to track what you hold</span></div>`
+      : `<div class="banner b-ok"><span>Actual portfolio state. Execution ready.</span></div>`;
+
+  const was = (f, fmt = pct) => prev && prev.kpis && num(prev.kpis[f]) !== null ? `was ${fmt(prev.kpis[f])}` : "";
+  const tiles = [
+    ["Invested", pct(k.invested), was("invested")],
+    ["Expected return (1y)", pct(k.expected_return), `vol ${pct(k.expected_volatility)} · Sharpe ${num(k.expected_sharpe) === null ? "—" : (+k.expected_sharpe).toFixed(2)}`],
+    ["Chance of a loss (1y)", pct(k.prob_loss_1y), num(k.var_99_1y) === null ? "" : `1-in-100 loss −${pct(Math.abs(k.var_99_1y))}`],
+    ["Trades this run", String(k.trades ?? (s.trades || []).length), `turnover ${pct(k.turnover, 0)} · cost ${money(k.transaction_cost)}`],
+  ];
+  $("kpis").innerHTML = tiles.map(([l, v, sub]) => `<div class="k"><div class="l">${esc(l)}</div><div class="v num">${esc(v)}</div><div class="s">${esc(sub)}</div></div>`).join("");
+
+  // trade ticket
+  const tr = s.trades || [];
+  $("ticketBody").innerHTML = tr.length ? `<table><thead><tr><th>Ticker</th><th>Company</th><th>Side</th><th class="r">Weight</th><th class="r">Amount</th><th class="r">Est. shares</th><th class="r">Price</th><th class="r">Below buy price</th><th>Flag</th></tr></thead><tbody>` +
+    tr.map(t => { const sd = SIDE[t.side] || [t.side, "p-n"];
+      const flag = REV(t.valuation_review_severity) ? `<span class="pill p-rev">Valuation review</span>` : (t.side === "SELL" && !num(t.target_weight) ? `<span class="mut">Exit</span>` : "");
+      const sh = num(t.trade_shares_est);
+      return `<tr><td><b>${esc(t.ticker)}</b></td><td class="mut">${esc(t.company_name && t.company_name !== t.ticker ? t.company_name : "")}</td><td><span class="pill ${sd[1]}">${esc(sd[0])}</span></td>
+      <td class="r num">${pct(t.previous_weight)} → ${pct(t.target_weight)}</td><td class="r num">${money(t.trade_notional)}</td><td class="r num">${sh === null ? "" : Math.abs(sh).toLocaleString(undefined,{maximumFractionDigits:0})}</td>
+      <td class="r num">${px(t.current_price)}</td><td class="r num">${num(t.below_buy_price_pct) === null ? "—" : pct(t.below_buy_price_pct)}</td><td>${flag}</td></tr>`; }).join("") + `</tbody></table>`
+    : `<p class="mut">No trades. The model portfolio is unchanged.</p>`;
+  const nt = s.not_traded || [];
+  $("notTraded").innerHTML = (nt.length ? `Not traded: ${nt.map(x => `${esc(x.ticker)} ${pct(x.target_weight, 2)} (${esc(x.reason || "")})`).join(", ")}. ` : "") + "Below buy price is how far the price sits under the margin-of-safety entry price. Higher is cheaper.";
+
+  // attention
+  const flags = s.flags || [], warn = flags.filter(f => f.severity === "WARNING" || f.severity === "CRITICAL"), info = flags.filter(f => !(f.severity === "WARNING" || f.severity === "CRITICAL"));
+  let att = warn.map(f => `<div><span class="pill p-rev">${esc(String(f.severity).toLowerCase())}</span> ${esc(f.message)}</div>`).join("");
+  if ((s.blocked || []).length) att += `<div><span class="pill p-sell">blocked</span> ${s.blocked.map(b => esc(b.ticker)).join(", ")}: critical valuation anomaly, new entries not allowed</div>`;
+  att += info.map(f => `<div class="mut">${esc(f.message)}</div>`).join("");
+  $("attBody").innerHTML = att || `<div class="mut">Nothing flagged.</div>`;
+
+  // regime
+  $("regimeLine").innerHTML = `Regime <b>${esc(r.label)}</b>, leaning ${esc(r.top_candidate)} (${pct(r.top_probability, 0)}) · growth ${esc(String(r.growth || "").toLowerCase())} · inflation ${esc(String(r.inflation || "").toLowerCase())} · financial conditions ${esc(String(r.financial_conditions || "").toLowerCase())}`;
+  $("regimeTbl").innerHTML = (r.probabilities || []).slice().sort((a, b) => (b.probability || 0) - (a.probability || 0)).map(p =>
+    `<tr><td style="width:42%">${esc(p.regime)}</td><td><div class="barT"><div class="bar" style="width:${Math.max(2, (p.probability || 0) * 100).toFixed(0)}%"></div></div></td><td class="r num" style="width:14%">${pct(p.probability, 0)}</td></tr>`).join("");
+
+  // sectors
+  $("secTbl").innerHTML = `<thead><tr><th>#</th><th>Sector</th><th>Signal</th><th>Macro vs market</th><th class="r">3m vs SPY</th><th class="r">Model weight</th></tr></thead><tbody>` +
+    (s.sectors || []).map(x => { const sig = String(x.combined_signal || ""); const pc = /positive/i.test(sig) ? "p-buy" : /negative/i.test(sig) ? "p-sell" : "p-n";
+      return `<tr><td class="num">${esc(x.combined_rank)}</td><td>${esc(x.sector)} <span class="mut">${esc(x.ticker)}</span></td><td><span class="pill ${pc}">${esc(sig)}</span></td>
+      <td class="mut">${esc(x.macro_market_alignment)}${x.hard_conflict ? ` <span class="pill p-rev">conflict</span>` : ""}</td><td class="r num ${cls(x.relative_3m)}">${pct(x.relative_3m, 1, true)}</td><td class="r num">${num(x.model_weight) ? pct(x.model_weight) : "—"}</td></tr>`; }).join("") + `</tbody>`;
+
+  // holdings (model or actual)
+  if (view === "actual"){
+    $("holdTitle").textContent = "My holdings vs model";
+    const latestPx = latestPrices();
+    const modelW = Object.fromEntries((s.holdings || []).map(h => [h.ticker, h.target_weight]));
+    const rows = aggregatePositions();
+    $("holdTbl").innerHTML = rows.length ? `<thead><tr><th>Ticker</th><th class="r">Shares</th><th class="r">Avg cost</th><th class="r">Last price</th><th class="r">P&amp;L</th><th class="r">Model weight</th></tr></thead><tbody>` +
+      rows.map(p => { const lp = latestPx[p.ticker]; const pl = lp ? (lp.price - p.avg) * p.shares : null;
+        return `<tr><td><b>${esc(p.ticker)}</b></td><td class="r num">${p.shares.toLocaleString()}</td><td class="r num">${px(p.avg)}</td><td class="r num">${lp ? px(lp.price) : "—"}</td>
+        <td class="r num ${cls(pl)}">${pl === null ? "no price" : money(pl)}</td><td class="r num">${modelW[p.ticker] ? pct(modelW[p.ticker]) : `<span class="mut">not in model</span>`}</td></tr>`; }).join("") + `</tbody>`
+      : `<tbody><tr><td class="mut">No positions recorded yet. Add them below.</td></tr></tbody>`;
+  } else {
+    $("holdTitle").textContent = "Target holdings";
+    $("holdTbl").innerHTML = `<thead><tr><th>Ticker</th><th class="r">Weight</th><th class="r">Exp. return</th><th class="r">Risk share</th></tr></thead><tbody>` +
+      (s.holdings || []).map(h => `<tr><td><b>${esc(h.ticker)}</b> <span class="mut">${esc(h.sector_ticker)}</span>${REV(h.valuation_review_severity) ? ` <span class="pill p-rev">review</span>` : ""}</td>
+      <td class="r num">${pct(h.target_weight)}</td><td class="r num">${pct(h.expected_total_return_annual)}</td><td class="r num">${pct(h.risk_contribution_share, 0)}</td></tr>`).join("") +
+      `<tr><td class="mut">Cash</td><td class="r num">${pct(k.cash)}</td><td></td><td></td></tr></tbody>`;
+  }
+
+  // watchlist
+  $("watchTbl").innerHTML = `<thead><tr><th>Ticker</th><th class="r">Price</th><th class="r">Buy price</th><th class="r">Needs to fall</th></tr></thead><tbody>` +
+    (s.watchlist || []).slice(0, 8).map(w => `<tr><td><b>${esc(w.ticker)}</b> <span class="mut">${esc(w.sector_ticker)}</span></td><td class="r num">${px(w.current_price)}</td><td class="r num">${px(w.mos_price_threshold)}</td><td class="r num">${pct(w.distance_to_mos_pct)}</td></tr>`).join("") + `</tbody>`;
+
+  renderTrack(i);
+  renderPositions();
+}
+
+/* model forward track record, same method as ledger/track_record.csv */
+function trackRows(upto){
+  const out = []; let cum = 1, cumS = 1;
+  for (let j = 1; j <= upto; j++){
+    const a = runs[j - 1], b = runs[j];
+    let ret = 0; const miss = [];
+    for (const h of a.holdings || []){
+      const p0 = num((a.prices || {})[h.ticker]), p1 = num((b.prices || {})[h.ticker]);
+      if (!p0 || !p1){ miss.push(h.ticker); continue; }
+      ret += (+h.target_weight || 0) * (p1 / p0 - 1);
+    }
+    const s0 = num(a.benchmark && a.benchmark.price), s1 = num(b.benchmark && b.benchmark.price);
+    const spy = s0 && s1 ? s1 / s0 - 1 : null;
+    const days = Math.round((Date.parse(b.market_session) - Date.parse(a.market_session)) / 864e5);
+    const er = num(a.kpis && a.kpis.expected_return);
+    cum *= 1 + ret; if (spy !== null) cumS *= 1 + spy;
+    out.push({from: a.market_session, to: b.market_session, days, invested: a.kpis.invested, ret, exp: er === null ? null : Math.pow(1 + er, days / 365) - 1, spy, cum: cum - 1, cumS: cumS - 1, miss});
+  }
+  return out;
+}
+
+function renderTrack(i){
+  $("trackTitle").textContent = view === "actual" ? "Track record: model (your P&L is in the holdings table)" : "Track record: model, forward";
+  const rows = trackRows(i);
+  if (!rows.length){ $("trackChart").innerHTML = ""; $("trackTbl").innerHTML = ""; $("trackNote").textContent = "Starts once a second run is recorded before the selected one."; return; }
+  $("trackTbl").innerHTML = `<thead><tr><th>Period</th><th class="r">Days</th><th class="r">Invested</th><th class="r">Model</th><th class="r">Expected</th><th class="r">SPY</th><th class="r">vs SPY</th></tr></thead><tbody>` +
+    rows.map(t => `<tr><td class="num">${esc(t.from)} → ${esc(t.to)}</td><td class="r num">${t.days}</td><td class="r num">${pct(t.invested, 0)}</td><td class="r num ${cls(t.ret)}">${pct(t.ret, 2, true)}</td>
+    <td class="r num mut">${pct(t.exp, 2, true)}</td><td class="r num ${cls(t.spy)}">${pct(t.spy, 2, true)}</td><td class="r num ${cls(t.spy === null ? null : t.ret - t.spy)}">${t.spy === null ? "—" : pct(t.ret - t.spy, 2, true)}</td></tr>`).join("") + `</tbody>`;
+  const last = rows[rows.length - 1];
+  $("trackNote").textContent = `Cumulative: model ${pct(last.cum, 2, true)} vs SPY ${pct(last.cumS, 2, true)}. Holdings at each run are marked to the next run's close; cash earns 0. A paper record of the model, not your account.` + (rows.some(r => r.miss.length) ? " Some prices were missing and those positions were skipped." : "");
+  drawChart(rows);
+}
+
+function drawChart(rows){
+  const box = $("trackChart"); const W = Math.max(280, Math.min(box.clientWidth || 600, 1080)), H = 150, L = 46, R = 112, T = 12, B = 22;
+  const pts = [{to: rows[0].from, cum: 0, cumS: 0}, ...rows];
+  const vals = pts.flatMap(p => [p.cum, p.cumS]).concat([0]);
+  let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi - lo) * 0.15 || 0.005; lo -= pad; hi += pad;
+  const x = j => L + j * (W - L - R) / Math.max(1, pts.length - 1), y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+  const line = f => pts.map((p, j) => `${x(j).toFixed(1)},${y(p[f]).toFixed(1)}`).join(" ");
+  const area = `${x(0)},${y(0)} ${line("cum")} ${x(pts.length - 1)},${y(0)}`;
+  const ticks = [lo + pad, 0, hi - pad].filter((v, k, a) => a.indexOf(v) === k);
+  const e = pts.length - 1;
+  box.innerHTML = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative return of the model versus SPY">
+    ${ticks.map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${pct(v, 1, true)}</text>`).join("")}
+    <polygon points="${area}" fill="var(--accent)" fill-opacity=".12"/>
+    <polyline points="${line("cumS")}" fill="none" stroke="var(--mut)" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <polyline points="${line("cum")}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+    <circle cx="${x(e)}" cy="${y(pts[e].cum)}" r="4" fill="var(--accent)"/>
+    <text x="${x(e) + 8}" y="${y(pts[e].cum) + 4}" style="fill:var(--accent)">Model ${pct(pts[e].cum, 2, true)}</text>
+    <text x="${x(e) + 8}" y="${y(pts[e].cumS) + 4}">SPY ${pct(pts[e].cumS, 2, true)}</text>
+    ${pts.map((p, j) => `<text x="${x(j)}" y="${H - 6}" text-anchor="${j === 0 ? "start" : j === e ? "end" : "middle"}">${esc(String(p.to).slice(5))}</text>`).join("")}
+  </svg>`;
+}
+
+/* ---------------- actual positions ---------------- */
+function aggregatePositions(){
+  const m = {};
+  for (const p of positions){ const t = String(p.ticker).toUpperCase(); const sh = +p.shares || 0, c = +p.avg_cost || 0;
+    if (!m[t]) m[t] = {ticker: t, shares: 0, cost: 0};
+    m[t].cost += sh * c; m[t].shares += sh; }
+  return Object.values(m).filter(p => Math.abs(p.shares) > 1e-9).map(p => ({...p, avg: p.cost / p.shares})).sort((a, b) => a.ticker.localeCompare(b.ticker));
+}
+function latestPrices(){
+  const out = {};
+  for (const r of runs){
+    for (const [t, v] of Object.entries(r.prices || {})) if (num(v)) out[t] = {price: +v, on: r.market_session};
+    for (const t of (r.trades || []).concat(r.watchlist || [])) if (num(t.current_price)) out[t.ticker] = {price: +t.current_price, on: r.market_session};
+  }
+  return out;
+}
+function renderPositions(){
+  $("posTbl").innerHTML = positions.length ? `<thead><tr><th>Date</th><th>Ticker</th><th class="r">Shares</th><th class="r">Avg cost</th><th>Note</th><th></th></tr></thead><tbody>` +
+    positions.map((p, j) => `<tr><td class="num">${esc(p.date)}</td><td><b>${esc(p.ticker)}</b></td><td class="r num">${esc(p.shares)}</td><td class="r num">${px(p.avg_cost)}</td><td class="mut">${esc(p.note)}</td>
+    <td class="r">${canWrite ? `<button type="button" data-del="${j}" aria-label="Remove ${esc(p.ticker)} row">Remove</button>` : ""}</td></tr>`).join("") + `</tbody>`
+    : `<tbody><tr><td class="mut">None yet. Add each position after you trade. A sale is a row with negative shares.</td></tr></tbody>`;
+}
+async function savePositions(next){
+  if (!db){ $("posMsg").textContent = "Can't save: the store isn't available in this view."; return false; }
+  try { await db.doc("actual/positions").set({rows: next, updated_at: new Date().toISOString()}); positions = next; $("posMsg").textContent = "Saved"; render(); return true; }
+  catch (e){ if (e && e.code === "invalid_argument"){ canWrite = false; } $("posMsg").textContent = "Couldn't save: " + (e && e.message ? e.message : "unknown error") + ". Only the page owner can change positions."; return false; }
+}
+$("posForm").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const row = {date: $("pDate").value, ticker: $("pTicker").value.trim().toUpperCase(), shares: +$("pShares").value, avg_cost: +$("pCost").value, note: $("pNote").value.trim()};
+  if (!row.date || !row.ticker || !isFinite(row.shares) || row.shares === 0 || !isFinite(row.avg_cost) || row.avg_cost <= 0){ $("posMsg").textContent = "Enter a date, ticker, non-zero shares and a positive cost."; return; }
+  if (await savePositions(positions.concat([row]))) $("posForm").reset();
+});
+$("posTbl").addEventListener("click", async ev => { const b = ev.target.closest("button[data-del]"); if (!b) return; const j = +b.dataset.del; await savePositions(positions.filter((_, k) => k !== j)); });
+$("pCopy").addEventListener("click", async () => {
+  const csv = "date,ticker,shares,avg_cost,note\n" + positions.map(p => [p.date, p.ticker, p.shares, p.avg_cost, String(p.note || "").replace(/[,\n]/g, " ")].join(",")).join("\n") + "\n";
+  try { await navigator.clipboard.writeText(csv); $("posMsg").textContent = "Copied. Paste into ledger/actual_holdings.csv."; }
+  catch { $("posMsg").textContent = "Your browser blocked the clipboard. Select the table and copy it instead."; }
+});
+$("pImport").addEventListener("click", () => $("csvIn").click());
+$("csvIn").addEventListener("change", async ev => {
+  const f = ev.target.files[0]; ev.target.value = ""; if (!f) return;
+  const lines = (await f.text()).split(/\r?\n/).filter(l => l.trim() && !l.startsWith("#"));
+  const hdr = (lines.shift() || "").toLowerCase().split(",").map(s => s.trim());
+  const ix = n => hdr.indexOf(n);
+  if (ix("ticker") < 0 || ix("shares") < 0){ $("posMsg").textContent = "That CSV needs at least ticker and shares columns."; return; }
+  const rows = lines.map(l => { const c = l.split(","); return {date: c[ix("date")] || "", ticker: String(c[ix("ticker")] || "").trim().toUpperCase(), shares: +c[ix("shares")], avg_cost: +(c[ix("avg_cost")] || 0), note: ix("note") >= 0 ? (c[ix("note")] || "") : ""}; })
+    .filter(r => r.ticker && isFinite(r.shares) && r.shares !== 0);
+  if (!rows.length){ $("posMsg").textContent = "No positions found in that file."; return; }
+  await savePositions(rows);
+});
+
+/* ---------------- load new run ---------------- */
+$("loadBtn").addEventListener("click", () => $("fileIn").click());
+$("fileIn").addEventListener("change", async ev => {
+  const files = [...ev.target.files]; ev.target.value = "";
+  if (!db){ $("loadMsg").textContent = "Can't add runs: the store isn't available in this view."; return; }
+  let ok = 0; const bad = [];
+  for (const f of files){
+    try { const s = JSON.parse(await f.text());
+      if (!validSnap(s)){ bad.push(f.name); continue; }
+      await db.collection("runs").doc(keyOf(s)).set(s); ok++; selected = keyOf(s);
+    } catch (e){ bad.push(f.name + (e && e.code === "invalid_argument" ? " (only the owner can add runs)" : "")); }
+  }
+  $("loadMsg").textContent = (ok ? `Added ${ok} run${ok > 1 ? "s" : ""}. ` : "") + (bad.length ? `Skipped: ${bad.join(", ")}. Use files from ledger/snapshots.` : "");
+});
+
+$("runSel").addEventListener("change", e => { selected = e.target.value; render(); });
+function setView(v){ view = v; $("vModel").setAttribute("aria-pressed", v === "model"); $("vActual").setAttribute("aria-pressed", v === "actual"); render(); }
+$("vModel").addEventListener("click", () => setView("model"));
+$("vActual").addEventListener("click", () => setView("actual"));
+window.addEventListener("resize", () => { if (runs.length) render(); });
+
+/* ---------------- store ---------------- */
+(async function init(){
+  let timer = setTimeout(() => { if (!runs.length) $("asof").textContent = "Can't reach the run store yet. It may still be loading."; }, 10000);
+  try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch { db = null; }
+  if (!db){ clearTimeout(timer); $("asof").textContent = "Sign in to claude.ai to load the stored runs."; return; }
+  try { const user = await window.claude.use("user"); if (user && user.isOwner){ const o = await user.isOwner(); if (o === false){ canWrite = false; $("loadBtn").disabled = false; } } } catch {}
+  db.collection("runs").onSnapshot(snap => {
+    if (!snap.metadata.fromCache) clearTimeout(timer);
+    runs = snap.docs.map(d => d.data()).filter(validSnap).sort((a, b) => keyOf(a).localeCompare(keyOf(b)));
+    if (!selected || !runs.some(r => keyOf(r) === selected)) selected = runs.length ? keyOf(runs[runs.length - 1]) : null;
+    render();
+  }, err => { clearTimeout(timer); $("asof").textContent = "Couldn't load runs: " + (err && err.message ? err.message : "store unavailable"); });
+  db.doc("actual/positions").onSnapshot(d => { positions = d.exists && Array.isArray((d.data() || {}).rows) ? d.data().rows.slice() : []; render(); renderPositions(); }, () => {});
+})();
+renderPositions();
+})();
+</script>
+</body>
+</html>
