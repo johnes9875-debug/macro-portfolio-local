@@ -1,0 +1,24 @@
+# --- secrets: never commit ---
+.env
+*.env.local
+
+# --- python ---
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# --- local data, caches and generated outputs (rebuilt every run) ---
+data/*
+!data/reference/
+models/
+outputs/
+logs/
+*.duckdb
+*.sqlite3
+
+# data/reference holds bundled fallback constituent lists (needed by tests)
+!data/reference/**/*.parquet
+
+# --- the run ledger IS tracked (see ledger/README.md) ---
+!ledger/

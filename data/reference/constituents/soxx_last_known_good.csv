@@ -1,0 +1,26 @@
+ticker,company_name,gics_sector,gics_sub_industry,membership_source_detail,snapshot_date,source_note
+INTC,Intel Corporation,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+AMD,"Advanced Micro Devices, Inc.",Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+MU,"Micron Technology, Inc.",Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+NVDA,NVIDIA Corporation,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+AVGO,Broadcom Inc.,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+MRVL,"Marvell Technology, Inc.",Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+KLAC,KLA Corporation,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+AMAT,"Applied Materials, Inc.",Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+ADI,"Analog Devices, Inc.",Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+QCOM,QUALCOMM Incorporated,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+TXN,Texas Instruments Incorporated,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+LRCX,Lam Research Corporation,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+MPWR,"Monolithic Power Systems, Inc.",Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+SKHY,SK hynix Inc.,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+TER,"Teradyne, Inc.",Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+TSM,Taiwan Semiconductor Manufacturing Company Limited,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+NXPI,NXP Semiconductors N.V.,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+ALAB,"Astera Labs, Inc.",Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+MCHP,Microchip Technology Incorporated,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+CRDO,Credo Technology Group Holding Ltd,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+ASML,ASML Holding N.V.,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+ON,ON Semiconductor Corporation,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+TSEM,Tower Semiconductor Ltd.,Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+ENTG,"Entegris, Inc.",Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only
+MTSI,"MACOM Technology Solutions Holdings, Inc.",Information Technology,Semiconductors & Semiconductor Equipment,BUNDLED_SOXX_LAST_KNOWN_GOOD,2026-09-29,Secondary public SOXX holdings snapshot; continuity fallback only

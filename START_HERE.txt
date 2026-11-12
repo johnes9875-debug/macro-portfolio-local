@@ -1,0 +1,14 @@
+MACRO PORTFOLIO LOCAL v1.0.13
+============================
+
+Open RUN_ME.ipynb in your existing Python 3.11 Jupyter.
+Restart Kernel + Clear Outputs, then Run All Cells.
+
+There is no FRED-key prompt. The private .env file is loaded automatically.
+Do not share this package because it contains your FRED credential.
+
+Universe v1.0.13: S&P 500 core + Nasdaq-100 growth overlay + SOXX semiconductor overlay.
+The lists are deduplicated and refreshed dynamically on each new market-date run.
+
+GICS v1.0.13: every master-universe stock must resolve to one of the 11 canonical GICS sectors before Section E continues.
+SOXX semiconductor members map to Information Technology / XLK.

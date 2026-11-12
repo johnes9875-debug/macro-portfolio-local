@@ -1,0 +1,328 @@
+system:
+  project_name: Macro Regime Portfolio Engine
+  version: local-1.0.13-valuation-guardrails
+  random_seed: 42
+portfolio:
+  base_currency: USD
+  benchmark: SPY
+  initial_nav: 1000000
+  allow_short: false
+  max_stock_weight: 0.1
+  max_sector_weight: 0.3
+  max_risky_sector_share: 0.7
+  min_eligible_sectors_for_risky_cap: 2
+  min_cash_weight: 0.0
+  optimizer_weight_epsilon: 1.0e-08
+universe:
+  membership_mode: LIVE_ONLY_CURRENT_MEMBERSHIP
+  http_timeout_seconds: 30
+  resilience:
+    allow_bundled_soxx_fallback: true
+    bundled_soxx_snapshot_date: 2026-09-29
+    warn_if_bundled_snapshot_older_than_days: 90
+  sources:
+    sp500:
+      enabled: true
+      role: CORE
+    nasdaq100:
+      enabled: true
+      role: GROWTH_OVERLAY
+    soxx:
+      enabled: true
+      role: SEMICONDUCTOR_SPECIALIST_OVERLAY
+  liquidity:
+    min_adv20_usd: 20000000
+    min_price_usd: 3.0
+    adv_window: 20
+  research_funnel:
+    deep_valuation_target_min: 30
+    deep_valuation_max_total: 60
+    max_per_core_sector: 20
+    max_per_tactical_sector: 15
+    min_selection_confidence: 0.6
+    min_market_cap_usd: 5000000000
+    soxx_min_deep_names_when_xlk_active: 8
+execution:
+  transaction_cost_bps: 10.0
+  transaction_cost_rate: 0.001
+  min_trade_weight: 0.005
+  max_adv_participation: 0.1
+  portfolio_state_mode: MODEL
+  assume_model_targets_executed: true
+risk:
+  trading_days: 252
+  var_confidence: 0.99
+  cvar_confidence: 0.99
+  target_volatility: null
+  covariance_method: ledoit_wolf
+  missing_return_warning_threshold: 0.02
+  path_mc_simulations: 20000
+  path_mc_block_length: 5
+  path_mc_chunk_size: 2000
+  lookback_days: 756
+  min_observations: 252
+  stress_window: 126
+  base_cov_weight: 0.8
+  stress_cov_weight: 0.2
+  max_missing_share: 0.15
+  gaussian_mc_simulations: 50000
+  market_source_min_overlap_ratio: 0.7
+  market_source_min_overlap_count: 3
+  common_date_coverage_ratio: 0.9
+valuation:
+  forecast_years: 5
+  gordon_growth_weight: 0.7
+  terminal_multiple_weight: 0.3
+  default_margin_of_safety: 0.15
+  margin_of_safety: 0.15
+  mos_base: 0.15
+  mos_confidence_sensitivity: 0.1
+  mos_min: 0.1
+  mos_max: 0.3
+  min_broad_peer_universe: 80
+  scenario_probabilities:
+    BEAR: 0.25
+    BASE: 0.5
+    BULL: 0.25
+  min_r_minus_g: 0.015
+  max_terminal_value_share: 0.9
+  large_scenario_upside: 3.0
+  f9_forward_weight: 0.55
+  f9_expectations_weight: 0.25
+  f9_relative_weight: 0.2
+  f9_forward_scale: 0.25
+  financial_payout_diagnostic:
+    min_source_company_coverage: 8
+    large_payout_gap: 0.3
+    extreme_payout_low: -0.5
+    extreme_payout_high: 1.5
+    recent_years: 3
+    material_improvement_threshold: 0.1
+    large_remaining_gap: 0.5
+    extreme_gross_payout: 2.0
+    anchor_lower_bound: 0.0
+    anchor_upper_bound: 2.0
+  peer_engine:
+    narrow_min_peers_same_sector_model: 2
+    narrow_min_peers_same_sector_metric: 3
+    narrow_min_peers_same_model: 2
+    narrow_min_peers_broad_metric: 3
+    broad_min_subindustry_peers: 2
+    broad_preferred_subindustry_peers: 3
+    broad_max_peers: 7
+    broad_similarity_peers: 5
+    current_multiple_bounds:
+      EV_EBITDA:
+      - 2.0
+      - 60.0
+      PRICE_BOOK:
+      - 0.25
+      - 12.0
+      PRICE_EARNINGS:
+      - 4.0
+      - 100.0
+    terminal_multiple_bounds:
+      EV_EBITDA:
+      - 4.0
+      - 30.0
+      PRICE_BOOK:
+      - 0.5
+      - 6.0
+      PRICE_EARNINGS:
+      - 8.0
+      - 40.0
+    scenario_multipliers:
+      BEAR: 0.9
+      BASE: 1.0
+      BULL: 1.1
+    narrow_source_quality:
+      SAME_SECTOR_SAME_MODEL: 1.0
+      SAME_SECTOR_SAME_METRIC: 0.9
+      SAME_EXECUTION_MODEL: 0.85
+      BROAD_SAME_METRIC: 0.75
+    broad_source_quality:
+      SUBINDUSTRY_3PLUS: 1.0
+      SUBINDUSTRY_2: 0.9
+      SECTOR_SIMILARITY: 0.8
+      BROAD_SIMILARITY: 0.65
+    large_anchor_change_threshold: 0.3
+  terminal_guardrail:
+    low_confidence_threshold: 0.7
+    low_quality_sources:
+    - SUBINDUSTRY_2
+    - SECTOR_SIMILARITY
+    - BROAD_SIMILARITY
+    min_anchor_to_current: 0.5
+    max_anchor_to_current: 2.0
+  anomaly_gate:
+    iv_price_ratio_min: 0.2
+    iv_price_ratio_max: 3.0
+    consensus_review_divergence: 0.4
+    consensus_critical_divergence: 0.75
+    block_critical_new_entries: true
+  security_overrides:
+    TSM:
+      security_type: ADR
+      underlying_per_listed_unit: 5.0
+      expected_financial_currency: TWD
+      expected_price_currency: USD
+      source_note: 'TSMC official ADR program: 1 ADR represents 5 ordinary shares'
+regime:
+  smoothing_half_life_days: 10.0
+  min_dwell_observations: 3
+  economic_prior_weight: 0.75
+  financial_overlay_weight: 0.25
+  sector_prior_matrix:
+    Goldilocks:
+      XLB: 0.2
+      XLC: 0.6
+      XLE: -0.3
+      XLF: 0.3
+      XLI: 0.45
+      XLK: 0.8
+      XLP: -0.2
+      XLRE: 0.35
+      XLU: -0.1
+      XLV: 0.05
+      XLY: 0.7
+    Reflation:
+      XLB: 0.8
+      XLC: 0.15
+      XLE: 0.9
+      XLF: 0.6
+      XLI: 0.75
+      XLK: 0.05
+      XLP: -0.25
+      XLRE: -0.4
+      XLU: -0.35
+      XLV: -0.1
+      XLY: 0.3
+    Disinflationary slowdown:
+      XLB: -0.5
+      XLC: 0.1
+      XLE: -0.7
+      XLF: -0.4
+      XLI: -0.45
+      XLK: 0.2
+      XLP: 0.6
+      XLRE: 0.25
+      XLU: 0.55
+      XLV: 0.65
+      XLY: -0.45
+    Stagflation:
+      XLB: 0.2
+      XLC: -0.3
+      XLE: 0.9
+      XLF: -0.3
+      XLI: -0.2
+      XLK: -0.55
+      XLP: 0.55
+      XLRE: -0.45
+      XLU: 0.3
+      XLV: 0.45
+      XLY: -0.75
+  financial_condition_sector_sensitivity:
+    Monetary policy:
+      XLB: 0.5
+      XLC: 0.75
+      XLE: 0.3
+      XLF: 0.45
+      XLI: 0.5
+      XLK: 1.0
+      XLP: 0.25
+      XLRE: 1.0
+      XLU: 0.75
+      XLV: 0.35
+      XLY: 0.85
+    Liquidity:
+      XLB: 0.55
+      XLC: 0.75
+      XLE: 0.4
+      XLF: 0.7
+      XLI: 0.55
+      XLK: 1.0
+      XLP: 0.2
+      XLRE: 0.85
+      XLU: 0.35
+      XLV: 0.3
+      XLY: 0.85
+    Credit stress:
+      XLB: 0.65
+      XLC: 0.45
+      XLE: 0.55
+      XLF: 1.0
+      XLI: 0.7
+      XLK: 0.45
+      XLP: 0.15
+      XLRE: 0.8
+      XLU: 0.3
+      XLV: 0.2
+      XLY: 0.9
+    Market risk appetite:
+      XLB: 0.7
+      XLC: 0.8
+      XLE: 0.6
+      XLF: 0.75
+      XLI: 0.75
+      XLK: 0.9
+      XLP: 0.2
+      XLRE: 0.65
+      XLU: 0.2
+      XLV: 0.25
+      XLY: 1.0
+data:
+  historical_start: '2000-01-01'
+  update_overlap_days: 5
+optimizer:
+  risk_aversion: 5.0
+  turnover_penalty: 1.0
+alpha:
+  sector_weight: 0.3
+  company_weight: 0.35
+  valuation_weight: 0.35
+  alpha_return_per_signal: 0.05
+  max_abs_annual_alpha: 0.1
+  min_reasonable_expected_return: -0.1
+  max_reasonable_expected_return: 0.35
+  sharpe_fragility_threshold: 0.1
+  cash_fragility_threshold: 0.1
+monitoring:
+  near_buy_zone: 0.05
+  watch_buy_zone: 0.1
+  stock_cap_alert_ratio: 0.95
+  sector_cap_alert_ratio: 0.95
+  risk_contribution_alert: 0.3
+  high_cash_alert: 0.5
+  market_shocks:
+    MARKET_UP_10: 0.1
+    MARKET_DOWN_5: -0.05
+    MARKET_DOWN_10: -0.1
+    MARKET_DOWN_20: -0.2
+  price_change_alert: 0.05
+  mos_distance_change_alert: 0.05
+  weight_change_alert: 0.01
+  max_snapshot_folders: 120
+  alpha_rank_drift_alert: 5
+  alpha_score_drift_alert: 0.5
+  mos_distance_drift_alert: 0.1
+  target_weight_drift_alert: 0.03
+  valuation_price_drift_alert: 0.1
+  portfolio_surprise_alert: 0.03
+  min_performance_periods_for_stats: 5
+  auto_show_dashboard: false
+diagnostics:
+  regime_backtest:
+    publication_lag_days: 45
+    min_history_months: 36
+    rebalance: M
+    growth_series_count: 2
+    inflation_series_count: 2
+local:
+  market_calendar: NYSE
+  minutes_after_close: 30
+  scheduler_check_minutes: 60
+  dashboard_port: 8501
+  dashboard_host: 127.0.0.1
+  archive_key_outputs: true
+  max_archived_runs: 180
+  run_section_l_on_daily_close: false

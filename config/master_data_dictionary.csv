@@ -1,0 +1,60 @@
+dataset,category,series_id,name,source,frequency,units,priority,pit_required,enabled,historical_start,usage_scope,data_note,pit_ready,backtest_ready
+fred,growth,GDPC1,Real GDP,FRED,quarterly,Billions chained 2017 USD,core,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,growth,INDPRO,Industrial Production Index,FRED,monthly,Index,core,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,growth,RSAFS,Retail Sales,FRED,monthly,USD millions,core,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,growth,PAYEMS,Nonfarm Payrolls,FRED,monthly,Thousands,core,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,growth,UNRATE,Unemployment Rate,FRED,monthly,Percent,core,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,growth,ICSA,Initial Jobless Claims,FRED,weekly,Number,core,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,growth,JTSJOL,Job Openings,FRED,monthly,Thousands,secondary,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,growth,PERMIT,Building Permits,FRED,monthly,Thousands annual rate,secondary,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,growth,HOUST,Housing Starts,FRED,monthly,Thousands annual rate,secondary,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,inflation,CPIAUCSL,Consumer Price Index,FRED,monthly,Index,core,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,inflation,CPILFESL,Core CPI,FRED,monthly,Index,core,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,inflation,PCEPI,PCE Price Index,FRED,monthly,Index,core,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,inflation,PCEPILFE,Core PCE Price Index,FRED,monthly,Index,core,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,inflation,PPIACO,Producer Price Index — All Commodities,FRED,monthly,Index,secondary,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,inflation,CES0500000003,Average Hourly Earnings — Private,FRED,monthly,USD per hour,core,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,inflation,ECIWAG,Employment Cost Index — Wages,FRED,quarterly,Index,secondary,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,rates,DFF,Effective Federal Funds Rate,FRED,daily,Percent,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,rates,DGS2,US Treasury 2Y Yield,FRED,daily,Percent,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,rates,DGS10,US Treasury 10Y Yield,FRED,daily,Percent,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,rates,DFII10,US 10Y Real Yield,FRED,daily,Percent,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,rates,T10Y2Y,10Y minus 2Y Treasury Spread,FRED,daily,Percent,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,rates,T10Y3M,10Y minus 3M Treasury Spread,FRED,daily,Percent,secondary,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,rates,T10YIE,10Y Breakeven Inflation Rate,FRED,daily,Percent,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,liquidity,WALCL,Federal Reserve Total Assets,FRED,weekly,USD millions,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,liquidity,RRPONTSYD,Overnight Reverse Repo,FRED,daily,USD billions,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,liquidity,WTREGEN,US Treasury General Account,FRED,weekly,USD millions,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,liquidity,M2SL,M2 Money Supply,FRED,monthly,USD billions,secondary,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,liquidity,NFCI,Chicago Fed National Financial Conditions Index,FRED,weekly,Index,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,credit,BAMLH0A0HYM2,US High Yield Option-Adjusted Spread,FRED,daily,Percent,core,False,True,2000-01-01,LIVE_ONLY,Short historical coverage; usable for live monitoring but not full-history regime backtest.,True,False
+fred,credit,BAMLC0A0CM,US Investment Grade Option-Adjusted Spread,FRED,daily,Percent,core,False,True,2000-01-01,LIVE_ONLY,Short historical coverage; usable for live monitoring but not full-history regime backtest.,True,False
+fred,credit,DRTSCILM,Banks Tightening C&I Loan Standards,FRED,quarterly,Net percent,secondary,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,credit,TOTLL,Loans and Leases in Bank Credit,FRED,weekly,USD billions,secondary,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,fiscal,GFDEGDQ188S,US Federal Debt to GDP,FRED,quarterly,Percent of GDP,secondary,True,True,2000-01-01,LIVE_AND_HISTORY,,False,False
+fred,volatility,VIXCLS,CBOE VIX,FRED,daily,Index,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+fred,fx,DEXCHUS,USD/CNY — Chinese Yuan per USD,FRED,daily,CNY per USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,equity,SPY,S&P 500 ETF,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,equity,RSP,S&P 500 Equal Weight ETF,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,equity,QQQ,Nasdaq 100 ETF,Yahoo Finance,daily,USD,secondary,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,equity,IWM,Russell 2000 ETF,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,sector,XLB,Materials,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,sector,XLC,Communication Services,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,sector,XLE,Energy,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,sector,XLF,Financials,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,sector,XLI,Industrials,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,sector,XLK,Technology,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,sector,XLP,Consumer Staples,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,sector,XLRE,Real Estate,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,sector,XLU,Utilities,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,sector,XLV,Healthcare,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,sector,XLY,Consumer Discretionary,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,credit,HYG,High Yield Corporate Bond ETF,Yahoo Finance,daily,USD,secondary,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,credit,LQD,Investment Grade Corporate Bond ETF,Yahoo Finance,daily,USD,secondary,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,rates,TLT,20+ Year Treasury ETF,Yahoo Finance,daily,USD,secondary,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,commodity,CL=F,WTI Crude Oil,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,commodity,GC=F,Gold,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,commodity,HG=F,Copper,Yahoo Finance,daily,USD,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,fx,DX-Y.NYB,US Dollar Index,Yahoo Finance,daily,Index,core,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,fx,JPY=X,USDJPY,Yahoo Finance,daily,JPY per USD,secondary,False,True,2000-01-01,LIVE_AND_HISTORY,,True,False
+market,fx,CNH=X,USDCNH,Yahoo Finance,daily,CNH per USD,secondary,False,False,2000-01-01,DISABLED,Yahoo historical retrieval unreliable. DEXCHUS used as core China FX proxy.,True,False

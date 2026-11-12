@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "macro-portfolio-local"
+version = "1.0.13"
+description = "Local automated macro-regime portfolio research and decision-support system"
+requires-python = ">=3.11,<3.13"
+
+[tool.setuptools.packages.find]
+where = ["src"]
