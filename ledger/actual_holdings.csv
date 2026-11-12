@@ -1,0 +1,3 @@
+date,ticker,shares,avg_cost,note
+# Add one row per position you ACTUALLY hold after you trade. Example:
+# 2026-11-13,MO,1290,77.40,bought after 11 Nov run

@@ -1,0 +1,572 @@
+{
+ "ledger_version": "1.0.0",
+ "run_id": "LOCAL_20261111_134025",
+ "market_session": "2026-11-11",
+ "created_at": "2026-11-12T13:42:55.135326",
+ "system_version": "local-1.0.13-valuation-guardrails",
+ "state": {
+  "portfolio_state_mode": "MODEL",
+  "portfolio_state_is_actual": false,
+  "real_money_execution_ready": false,
+  "pipeline_operational_ready": true,
+  "pit_backtest_ready": false,
+  "critical_alerts": 0,
+  "liquidity_failures": 0,
+  "previous_snapshot": "20261001_172610"
+ },
+ "kpis": {
+  "nav": 1000000.0,
+  "invested": 0.47014,
+  "cash": 0.52986,
+  "positions": 7,
+  "expected_return": 0.087207,
+  "expected_volatility": 0.079175,
+  "expected_sharpe": 0.493086,
+  "prob_loss_1y": 0.14595,
+  "var_99_1y": 0.098357,
+  "median_max_drawdown": -0.057969,
+  "turnover": 0.633595,
+  "transaction_cost": 633.595439,
+  "largest_sector_weight": 0.213383,
+  "portfolio_beta": 0.300318,
+  "trades": 9
+ },
+ "regime": {
+  "label": "Transitional / mixed",
+  "top_candidate": "Reflation",
+  "top_probability": 0.327275,
+  "growth": "Neutral / transitional",
+  "inflation": "Inflationary",
+  "financial_conditions": "Restrictive",
+  "probabilities": [
+   {
+    "regime": "Reflation",
+    "probability": 0.327275
+   },
+   {
+    "regime": "Stagflation",
+    "probability": 0.253754
+   },
+   {
+    "regime": "Goldilocks",
+    "probability": 0.233506
+   },
+   {
+    "regime": "Disinflationary slowdown",
+    "probability": 0.185464
+   }
+  ]
+ },
+ "sectors": [
+  {
+   "ticker": "XLV",
+   "sector": "Healthcare",
+   "combined_rank": 1,
+   "combined_signal": "Strong positive",
+   "macro_market_alignment": "Positive confirmation",
+   "hard_conflict": false,
+   "relative_3m": 0.147263,
+   "model_weight": 0.029537
+  },
+  {
+   "ticker": "XLP",
+   "sector": "Consumer Staples",
+   "combined_rank": 2,
+   "combined_signal": "Positive",
+   "macro_market_alignment": "Market-led positive",
+   "hard_conflict": false,
+   "relative_3m": 0.09117,
+   "model_weight": 0.209167
+  },
+  {
+   "ticker": "XLE",
+   "sector": "Energy",
+   "combined_rank": 3,
+   "combined_signal": "Positive",
+   "macro_market_alignment": "Macro-led positive",
+   "hard_conflict": false,
+   "relative_3m": 0.064805,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLF",
+   "sector": "Financials",
+   "combined_rank": 4,
+   "combined_signal": "Positive",
+   "macro_market_alignment": "Market-led positive",
+   "hard_conflict": false,
+   "relative_3m": 0.030717,
+   "model_weight": 0.154245
+  },
+  {
+   "ticker": "XLB",
+   "sector": "Materials",
+   "combined_rank": 5,
+   "combined_signal": "Positive",
+   "macro_market_alignment": "Macro-led positive",
+   "hard_conflict": false,
+   "relative_3m": 0.039042,
+   "model_weight": 0.07719
+  },
+  {
+   "ticker": "XLY",
+   "sector": "Consumer Discretionary",
+   "combined_rank": 6,
+   "combined_signal": "Neutral",
+   "macro_market_alignment": "Macro-led negative",
+   "hard_conflict": false,
+   "relative_3m": 0.044498,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLU",
+   "sector": "Utilities",
+   "combined_rank": 7,
+   "combined_signal": "Negative",
+   "macro_market_alignment": "Macro-led negative",
+   "hard_conflict": false,
+   "relative_3m": 0.023125,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLI",
+   "sector": "Industrials",
+   "combined_rank": 8,
+   "combined_signal": "Negative",
+   "macro_market_alignment": "Macro positive / market weak",
+   "hard_conflict": true,
+   "relative_3m": -0.05649,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLRE",
+   "sector": "Real Estate",
+   "combined_rank": 9,
+   "combined_signal": "Negative",
+   "macro_market_alignment": "Macro-led negative",
+   "hard_conflict": false,
+   "relative_3m": 0.017376,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLC",
+   "sector": "Communication Services",
+   "combined_rank": 10,
+   "combined_signal": "Negative",
+   "macro_market_alignment": "Market-led negative",
+   "hard_conflict": false,
+   "relative_3m": -0.011111,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLK",
+   "sector": "Technology",
+   "combined_rank": 11,
+   "combined_signal": "Strong negative",
+   "macro_market_alignment": "Negative confirmation",
+   "hard_conflict": false,
+   "relative_3m": -0.064149,
+   "model_weight": 0.0
+  }
+ ],
+ "holdings": [
+  {
+   "ticker": "MO",
+   "company_name": "Altria",
+   "sector_ticker": "XLP",
+   "previous_weight": 0.0,
+   "target_weight": 0.1,
+   "expected_total_return_annual": 0.127573,
+   "risk_contribution_share": 0.119884,
+   "current_price": 77.389999,
+   "expected_intrinsic_value": 117.386152,
+   "mos_price_threshold": 97.929119,
+   "valuation_review_severity": "REVIEW"
+  },
+  {
+   "ticker": "CPAY",
+   "company_name": "Corpay",
+   "sector_ticker": "XLF",
+   "previous_weight": 0.0,
+   "target_weight": 0.1,
+   "expected_total_return_annual": 0.151942,
+   "risk_contribution_share": 0.259936,
+   "current_price": 461.950012,
+   "expected_intrinsic_value": 641.480046,
+   "mos_price_threshold": 535.79164,
+   "valuation_review_severity": "NORMAL"
+  },
+  {
+   "ticker": "KDP",
+   "company_name": "Keurig Dr Pepper",
+   "sector_ticker": "XLP",
+   "previous_weight": 0.0,
+   "target_weight": 0.1,
+   "expected_total_return_annual": 0.123156,
+   "risk_contribution_share": 0.19592,
+   "current_price": 38.25,
+   "expected_intrinsic_value": 63.572102,
+   "mos_price_threshold": 52.856208,
+   "valuation_review_severity": "REVIEW"
+  },
+  {
+   "ticker": "NEM",
+   "company_name": "Newmont",
+   "sector_ticker": "XLB",
+   "previous_weight": 0.0,
+   "target_weight": 0.07719,
+   "expected_total_return_annual": 0.131223,
+   "risk_contribution_share": 0.200522,
+   "current_price": 118.470001,
+   "expected_intrinsic_value": 165.859835,
+   "mos_price_threshold": 138.217563,
+   "valuation_review_severity": "NORMAL"
+  },
+  {
+   "ticker": "FDS",
+   "company_name": "FactSet",
+   "sector_ticker": "XLF",
+   "previous_weight": 0.0,
+   "target_weight": 0.054245,
+   "expected_total_return_annual": 0.13103,
+   "risk_contribution_share": 0.140581,
+   "current_price": 334.880005,
+   "expected_intrinsic_value": 450.469084,
+   "mos_price_threshold": 377.081334,
+   "valuation_review_severity": "REVIEW"
+  },
+  {
+   "ticker": "RMD",
+   "company_name": "ResMed",
+   "sector_ticker": "XLV",
+   "previous_weight": 0.1,
+   "target_weight": 0.029537,
+   "expected_total_return_annual": 0.106462,
+   "risk_contribution_share": 0.055281,
+   "current_price": 238.529999,
+   "expected_intrinsic_value": 306.054276,
+   "mos_price_threshold": 255.446799,
+   "valuation_review_severity": "NORMAL"
+  },
+  {
+   "ticker": "EL",
+   "company_name": "Est\u00e9e Lauder Companies (The)",
+   "sector_ticker": "XLP",
+   "previous_weight": 0.0,
+   "target_weight": 0.009167,
+   "expected_total_return_annual": 0.120612,
+   "risk_contribution_share": 0.02071,
+   "current_price": 112.330002,
+   "expected_intrinsic_value": 143.249447,
+   "mos_price_threshold": 119.472161,
+   "valuation_review_severity": "NORMAL"
+  }
+ ],
+ "trades": [
+  {
+   "ticker": "MO",
+   "company_name": "Altria",
+   "sector_ticker": "XLP",
+   "side": "BUY",
+   "previous_weight": 0.0,
+   "target_weight": 0.1,
+   "trade_notional": 99999.998999,
+   "trade_shares_est": 1292.156607,
+   "current_price": 77.389999,
+   "below_buy_price_pct": 0.209735,
+   "valuation_review_severity": "REVIEW",
+   "liquidity_check": "PASS"
+  },
+  {
+   "ticker": "CPAY",
+   "company_name": "Corpay",
+   "sector_ticker": "XLF",
+   "side": "BUY",
+   "previous_weight": 0.0,
+   "target_weight": 0.1,
+   "trade_notional": 99999.99832,
+   "trade_shares_est": 216.473635,
+   "current_price": 461.950012,
+   "below_buy_price_pct": 0.137818,
+   "valuation_review_severity": "NORMAL",
+   "liquidity_check": "PASS"
+  },
+  {
+   "ticker": "KDP",
+   "company_name": "Keurig Dr Pepper",
+   "sector_ticker": "XLP",
+   "side": "BUY",
+   "previous_weight": 0.0,
+   "target_weight": 0.1,
+   "trade_notional": 99999.99762,
+   "trade_shares_est": 2614.379023,
+   "current_price": 38.25,
+   "below_buy_price_pct": 0.276339,
+   "valuation_review_severity": "REVIEW",
+   "liquidity_check": "PASS"
+  },
+  {
+   "ticker": "NEM",
+   "company_name": "Newmont",
+   "sector_ticker": "XLB",
+   "side": "BUY",
+   "previous_weight": 0.0,
+   "target_weight": 0.07719,
+   "trade_notional": 77190.272481,
+   "trade_shares_est": 651.55965,
+   "current_price": 118.470001,
+   "below_buy_price_pct": 0.142873,
+   "valuation_review_severity": "NORMAL",
+   "liquidity_check": "PASS"
+  },
+  {
+   "ticker": "FDS",
+   "company_name": "FactSet",
+   "sector_ticker": "XLF",
+   "side": "BUY",
+   "previous_weight": 0.0,
+   "target_weight": 0.054245,
+   "trade_notional": 54245.063004,
+   "trade_shares_est": 161.983583,
+   "current_price": 334.880005,
+   "below_buy_price_pct": 0.111916,
+   "valuation_review_severity": "REVIEW",
+   "liquidity_check": "PASS"
+  },
+  {
+   "ticker": "EL",
+   "company_name": "Est\u00e9e Lauder Companies (The)",
+   "sector_ticker": "XLP",
+   "side": "BUY",
+   "previous_weight": 0.0,
+   "target_weight": 0.009167,
+   "trade_notional": 9167.108183,
+   "trade_shares_est": 81.608725,
+   "current_price": 112.330002,
+   "below_buy_price_pct": 0.059781,
+   "valuation_review_severity": "NORMAL",
+   "liquidity_check": "PASS"
+  },
+  {
+   "ticker": "EXE",
+   "company_name": "EXE",
+   "sector_ticker": null,
+   "side": "SELL",
+   "previous_weight": 0.099996,
+   "target_weight": 0.0,
+   "trade_notional": -99995.920574,
+   "trade_shares_est": null,
+   "current_price": 88.629997,
+   "below_buy_price_pct": null,
+   "valuation_review_severity": null,
+   "liquidity_check": "PASS"
+  },
+  {
+   "ticker": "BKR",
+   "company_name": "BKR",
+   "sector_ticker": null,
+   "side": "SELL",
+   "previous_weight": 0.018319,
+   "target_weight": 0.0,
+   "trade_notional": -18318.630019,
+   "trade_shares_est": null,
+   "current_price": 49.41,
+   "below_buy_price_pct": null,
+   "valuation_review_severity": null,
+   "liquidity_check": "PASS"
+  },
+  {
+   "ticker": "RMD",
+   "company_name": "ResMed",
+   "sector_ticker": "XLV",
+   "side": "TRIM",
+   "previous_weight": 0.1,
+   "target_weight": 0.029537,
+   "trade_notional": -70462.807003,
+   "trade_shares_est": -295.404383,
+   "current_price": 238.529999,
+   "below_buy_price_pct": 0.066224,
+   "valuation_review_severity": "NORMAL",
+   "liquidity_check": "PASS"
+  }
+ ],
+ "not_traded": [
+  {
+   "ticker": "DLTR",
+   "target_weight": 0.004216,
+   "reason": "below 0.5% minimum position"
+  },
+  {
+   "ticker": "BF.B",
+   "target_weight": 0.0,
+   "reason": "optimizer residue"
+  }
+ ],
+ "flags": [
+  {
+   "severity": "WARNING",
+   "type": "VALUATION_REVIEW",
+   "ticker": "FDS",
+   "message": "FDS is in the target portfolio but its valuation is flagged review (MODEL_CONSENSUS_DIVERGENCE_REVIEW)"
+  },
+  {
+   "severity": "WARNING",
+   "type": "VALUATION_REVIEW",
+   "ticker": "KDP",
+   "message": "KDP is in the target portfolio but its valuation is flagged review (MODEL_CONSENSUS_DIVERGENCE_REVIEW)"
+  },
+  {
+   "severity": "WARNING",
+   "type": "VALUATION_REVIEW",
+   "ticker": "MO",
+   "message": "MO is in the target portfolio but its valuation is flagged review (MODEL_CONSENSUS_DIVERGENCE_REVIEW)"
+  },
+  {
+   "severity": "INFO",
+   "type": "NEAR_MOS_ENTRY",
+   "ticker": "APA",
+   "message": "APA is only 2.6% above its Current CONFIG-driven MOS entry threshold (base=15%)."
+  },
+  {
+   "severity": "INFO",
+   "type": "STOCK_CAP_UTILIZATION",
+   "ticker": "CPAY",
+   "message": "CPAY target weight 10.0% is near/at the 10.0% stock cap."
+  },
+  {
+   "severity": "INFO",
+   "type": "STOCK_CAP_UTILIZATION",
+   "ticker": "KDP",
+   "message": "KDP target weight 10.0% is near/at the 10.0% stock cap."
+  },
+  {
+   "severity": "INFO",
+   "type": "STOCK_CAP_UTILIZATION",
+   "ticker": "MO",
+   "message": "MO target weight 10.0% is near/at the 10.0% stock cap."
+  },
+  {
+   "severity": "INFO",
+   "type": "HIGH_CASH",
+   "ticker": "PORTFOLIO",
+   "message": "Cash allocation is 52.6%, indicating substantial undeployed capital."
+  },
+  {
+   "severity": "INFO",
+   "type": "NEAR_MOS_ENTRY",
+   "ticker": "TRV",
+   "message": "TRV is only 2.4% above its Current CONFIG-driven MOS entry threshold (base=15%)."
+  }
+ ],
+ "blocked": [
+  {
+   "ticker": "CF",
+   "company_name": "CF Industries",
+   "valuation_anomaly_reason": "MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 2.043659
+  },
+  {
+   "ticker": "SJM",
+   "company_name": "J.M. Smucker Company (The)",
+   "valuation_anomaly_reason": "MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 1.98789
+  }
+ ],
+ "watchlist": [
+  {
+   "ticker": "TRV",
+   "company_name": "Travelers Companies (The)",
+   "sector_ticker": "XLF",
+   "current_price": 399.459991,
+   "mos_price_threshold": 389.995281,
+   "distance_to_mos_pct": 0.024269
+  },
+  {
+   "ticker": "APA",
+   "company_name": "APA Corporation",
+   "sector_ticker": "XLE",
+   "current_price": 46.740002,
+   "mos_price_threshold": 45.548213,
+   "distance_to_mos_pct": 0.026165
+  },
+  {
+   "ticker": "VLO",
+   "company_name": "Valero Energy",
+   "sector_ticker": "XLE",
+   "current_price": 363.709991,
+   "mos_price_threshold": 320.362168,
+   "distance_to_mos_pct": 0.135309
+  },
+  {
+   "ticker": "AIZ",
+   "company_name": "Assurant",
+   "sector_ticker": "XLF",
+   "current_price": 323.380005,
+   "mos_price_threshold": 280.442643,
+   "distance_to_mos_pct": 0.153106
+  },
+  {
+   "ticker": "AMGN",
+   "company_name": "Amgen",
+   "sector_ticker": "XLV",
+   "current_price": 468.109985,
+   "mos_price_threshold": 405.726676,
+   "distance_to_mos_pct": 0.153757
+  },
+  {
+   "ticker": "MPC",
+   "company_name": "Marathon Petroleum",
+   "sector_ticker": "XLE",
+   "current_price": 402.839996,
+   "mos_price_threshold": 340.132571,
+   "distance_to_mos_pct": 0.184362
+  },
+  {
+   "ticker": "GILD",
+   "company_name": "Gilead Sciences",
+   "sector_ticker": "XLV",
+   "current_price": 169.729996,
+   "mos_price_threshold": 141.450841,
+   "distance_to_mos_pct": 0.199922
+  },
+  {
+   "ticker": "CL",
+   "company_name": "Colgate-Palmolive",
+   "sector_ticker": "XLP",
+   "current_price": 98.0,
+   "mos_price_threshold": 80.810468,
+   "distance_to_mos_pct": 0.212714
+  },
+  {
+   "ticker": "EOG",
+   "company_name": "EOG Resources",
+   "sector_ticker": "XLE",
+   "current_price": 153.770004,
+   "mos_price_threshold": 124.948343,
+   "distance_to_mos_pct": 0.230669
+  },
+  {
+   "ticker": "SPGI",
+   "company_name": "S&P Global",
+   "sector_ticker": "XLF",
+   "current_price": 475.109985,
+   "mos_price_threshold": 379.948175,
+   "distance_to_mos_pct": 0.25046
+  }
+ ],
+ "prices": {
+  "BKR": 49.41,
+  "CPAY": 461.950012,
+  "EL": 112.330002,
+  "EXE": 88.629997,
+  "FDS": 334.880005,
+  "KDP": 38.25,
+  "MO": 77.389999,
+  "NEM": 118.470001,
+  "RMD": 238.529999
+ },
+ "benchmark": {
+  "ticker": "SPY",
+  "price": 759.809998
+ }
+}

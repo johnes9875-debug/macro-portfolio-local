@@ -1,0 +1,461 @@
+{
+ "ledger_version": "1.0.0",
+ "run_id": "LOCAL_20260930_172333",
+ "market_session": "2026-09-30",
+ "created_at": "2026-10-01T17:26:11.444430",
+ "system_version": "local-1.0.13-valuation-guardrails",
+ "state": {
+  "portfolio_state_mode": "MODEL",
+  "portfolio_state_is_actual": false,
+  "real_money_execution_ready": false,
+  "pipeline_operational_ready": true,
+  "pit_backtest_ready": false,
+  "critical_alerts": 0,
+  "liquidity_failures": 0,
+  "previous_snapshot": null
+ },
+ "kpis": {
+  "nav": 1000000.0,
+  "invested": 0.218315,
+  "cash": 0.781685,
+  "positions": 3,
+  "expected_return": 0.064553,
+  "expected_volatility": 0.0456,
+  "expected_sharpe": 0.266913,
+  "prob_loss_1y": 0.0734,
+  "var_99_1y": 0.037413,
+  "median_max_drawdown": -0.029924,
+  "turnover": 0.218315,
+  "transaction_cost": 218.314536,
+  "largest_sector_weight": 0.118315,
+  "portfolio_beta": 0.12382,
+  "trades": 3
+ },
+ "regime": {
+  "label": "Transitional / mixed",
+  "top_candidate": "Reflation",
+  "top_probability": 0.320835,
+  "growth": "Neutral / transitional",
+  "inflation": "Mixed / near-neutral",
+  "financial_conditions": "Neutral / mixed",
+  "probabilities": [
+   {
+    "regime": "Reflation",
+    "probability": 0.320835
+   },
+   {
+    "regime": "Stagflation",
+    "probability": 0.246859
+   },
+   {
+    "regime": "Goldilocks",
+    "probability": 0.241619
+   },
+   {
+    "regime": "Disinflationary slowdown",
+    "probability": 0.190687
+   }
+  ]
+ },
+ "sectors": [
+  {
+   "ticker": "XLK",
+   "sector": "Technology",
+   "combined_rank": 1,
+   "combined_signal": "Strong positive",
+   "macro_market_alignment": "Market-led positive",
+   "hard_conflict": false,
+   "relative_3m": 0.030644,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLE",
+   "sector": "Energy",
+   "combined_rank": 2,
+   "combined_signal": "Strong positive",
+   "macro_market_alignment": "Positive confirmation",
+   "hard_conflict": false,
+   "relative_3m": 0.146314,
+   "model_weight": 0.118315
+  },
+  {
+   "ticker": "XLV",
+   "sector": "Healthcare",
+   "combined_rank": 3,
+   "combined_signal": "Positive",
+   "macro_market_alignment": "Positive confirmation",
+   "hard_conflict": false,
+   "relative_3m": 0.03454,
+   "model_weight": 0.1
+  },
+  {
+   "ticker": "XLC",
+   "sector": "Communication Services",
+   "combined_rank": 4,
+   "combined_signal": "Neutral",
+   "macro_market_alignment": "Neutral / mixed",
+   "hard_conflict": false,
+   "relative_3m": -0.01062,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLB",
+   "sector": "Materials",
+   "combined_rank": 5,
+   "combined_signal": "Neutral",
+   "macro_market_alignment": "Macro positive / market weak",
+   "hard_conflict": true,
+   "relative_3m": -0.06624,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLP",
+   "sector": "Consumer Staples",
+   "combined_rank": 6,
+   "combined_signal": "Neutral",
+   "macro_market_alignment": "Neutral / mixed",
+   "hard_conflict": false,
+   "relative_3m": -0.05121,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLI",
+   "sector": "Industrials",
+   "combined_rank": 7,
+   "combined_signal": "Neutral",
+   "macro_market_alignment": "Macro positive / market weak",
+   "hard_conflict": true,
+   "relative_3m": -0.112046,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLF",
+   "sector": "Financials",
+   "combined_rank": 8,
+   "combined_signal": "Neutral",
+   "macro_market_alignment": "Neutral / mixed",
+   "hard_conflict": false,
+   "relative_3m": -0.046902,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLY",
+   "sector": "Consumer Discretionary",
+   "combined_rank": 9,
+   "combined_signal": "Negative",
+   "macro_market_alignment": "Negative confirmation",
+   "hard_conflict": false,
+   "relative_3m": -0.101461,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLRE",
+   "sector": "Real Estate",
+   "combined_rank": 10,
+   "combined_signal": "Strong negative",
+   "macro_market_alignment": "Negative confirmation",
+   "hard_conflict": false,
+   "relative_3m": -0.091382,
+   "model_weight": 0.0
+  },
+  {
+   "ticker": "XLU",
+   "sector": "Utilities",
+   "combined_rank": 11,
+   "combined_signal": "Strong negative",
+   "macro_market_alignment": "Negative confirmation",
+   "hard_conflict": false,
+   "relative_3m": -0.137736,
+   "model_weight": 0.0
+  }
+ ],
+ "holdings": [
+  {
+   "ticker": "RMD",
+   "company_name": "ResMed|",
+   "sector_ticker": "XLV",
+   "previous_weight": 0.0,
+   "target_weight": 0.1,
+   "expected_total_return_annual": 0.122335,
+   "risk_contribution_share": 0.519601,
+   "current_price": 221.100006,
+   "expected_intrinsic_value": 294.469288,
+   "mos_price_threshold": 245.769074,
+   "valuation_review_severity": "NORMAL"
+  },
+  {
+   "ticker": "EXE",
+   "company_name": "Expand Energy",
+   "sector_ticker": "XLE",
+   "previous_weight": 0.0,
+   "target_weight": 0.099996,
+   "expected_total_return_annual": 0.099423,
+   "risk_contribution_share": 0.432569,
+   "current_price": 84.089996,
+   "expected_intrinsic_value": 169.269635,
+   "mos_price_threshold": 139.019991,
+   "valuation_review_severity": "NORMAL"
+  },
+  {
+   "ticker": "BKR",
+   "company_name": "Baker Hughes",
+   "sector_ticker": "XLE",
+   "previous_weight": 0.0,
+   "target_weight": 0.018319,
+   "expected_total_return_annual": 0.080746,
+   "risk_contribution_share": 0.047829,
+   "current_price": 54.900002,
+   "expected_intrinsic_value": 71.731926,
+   "mos_price_threshold": 58.553293,
+   "valuation_review_severity": "NORMAL"
+  }
+ ],
+ "trades": [
+  {
+   "ticker": "RMD",
+   "company_name": "ResMed|",
+   "sector_ticker": "XLV",
+   "side": "BUY",
+   "previous_weight": 0.0,
+   "target_weight": 0.1,
+   "trade_notional": 99999.984991,
+   "trade_shares_est": 452.283954,
+   "current_price": 221.100006,
+   "below_buy_price_pct": 0.100375,
+   "valuation_review_severity": "NORMAL",
+   "liquidity_check": "PASS"
+  },
+  {
+   "ticker": "EXE",
+   "company_name": "Expand Energy",
+   "sector_ticker": "XLE",
+   "side": "BUY",
+   "previous_weight": 0.0,
+   "target_weight": 0.099996,
+   "trade_notional": 99995.920574,
+   "trade_shares_est": 1189.153585,
+   "current_price": 84.089996,
+   "below_buy_price_pct": 0.395123,
+   "valuation_review_severity": "NORMAL",
+   "liquidity_check": "PASS"
+  },
+  {
+   "ticker": "BKR",
+   "company_name": "Baker Hughes",
+   "sector_ticker": "XLE",
+   "side": "BUY",
+   "previous_weight": 0.0,
+   "target_weight": 0.018319,
+   "trade_notional": 18318.630019,
+   "trade_shares_est": 333.672669,
+   "current_price": 54.900002,
+   "below_buy_price_pct": 0.062393,
+   "valuation_review_severity": "NORMAL",
+   "liquidity_check": "PASS"
+  }
+ ],
+ "not_traded": [],
+ "flags": [
+  {
+   "severity": "WARNING",
+   "type": "RISK_CONCENTRATION",
+   "ticker": "EXE",
+   "message": "EXE contributes 43.3% of portfolio volatility."
+  },
+  {
+   "severity": "WARNING",
+   "type": "RISK_CONCENTRATION",
+   "ticker": "RMD",
+   "message": "RMD contributes 52.0% of portfolio volatility."
+  },
+  {
+   "severity": "INFO",
+   "type": "STOCK_CAP_UTILIZATION",
+   "ticker": "EXE",
+   "message": "EXE target weight 10.0% is near/at the 10.0% stock cap."
+  },
+  {
+   "severity": "INFO",
+   "type": "HIGH_CASH",
+   "ticker": "PORTFOLIO",
+   "message": "Cash allocation is 78.2%, indicating substantial undeployed capital."
+  },
+  {
+   "severity": "INFO",
+   "type": "STOCK_CAP_UTILIZATION",
+   "ticker": "RMD",
+   "message": "RMD target weight 10.0% is near/at the 10.0% stock cap."
+  }
+ ],
+ "blocked": [
+  {
+   "ticker": "ALAB",
+   "company_name": "Astera Labs, Inc. Common Stock",
+   "valuation_anomaly_reason": "IV_PRICE_RATIO_BELOW_CRITICAL_BOUND;MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.009264
+  },
+  {
+   "ticker": "AMD",
+   "company_name": "Advanced Micro Devices",
+   "valuation_anomaly_reason": "IV_PRICE_RATIO_BELOW_CRITICAL_BOUND;MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.123546
+  },
+  {
+   "ticker": "BMY",
+   "company_name": "Bristol Myers Squibb",
+   "valuation_anomaly_reason": "MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 1.973373
+  },
+  {
+   "ticker": "CRWD",
+   "company_name": "CrowdStrike",
+   "valuation_anomaly_reason": "IV_PRICE_RATIO_BELOW_CRITICAL_BOUND;MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.009287
+  },
+  {
+   "ticker": "DDOG",
+   "company_name": "Datadog",
+   "valuation_anomaly_reason": "IV_PRICE_RATIO_BELOW_CRITICAL_BOUND;MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.036564
+  },
+  {
+   "ticker": "FANG",
+   "company_name": "Diamondback Energy",
+   "valuation_anomaly_reason": "IV_PRICE_RATIO_BELOW_CRITICAL_BOUND;MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.180438
+  },
+  {
+   "ticker": "MRVL",
+   "company_name": "Marvell Technology",
+   "valuation_anomaly_reason": "IV_PRICE_RATIO_BELOW_CRITICAL_BOUND;MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.158955
+  },
+  {
+   "ticker": "MU",
+   "company_name": "Micron Technology",
+   "valuation_anomaly_reason": "MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.311362
+  },
+  {
+   "ticker": "PANW",
+   "company_name": "Palo Alto Networks",
+   "valuation_anomaly_reason": "IV_PRICE_RATIO_BELOW_CRITICAL_BOUND;MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.087676
+  },
+  {
+   "ticker": "PLTR",
+   "company_name": "Palantir Technologies",
+   "valuation_anomaly_reason": "IV_PRICE_RATIO_BELOW_CRITICAL_BOUND;MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.070035
+  },
+  {
+   "ticker": "STX",
+   "company_name": "Seagate Technology",
+   "valuation_anomaly_reason": "MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.226021
+  },
+  {
+   "ticker": "TRGP",
+   "company_name": "Targa Resources",
+   "valuation_anomaly_reason": "IV_PRICE_RATIO_BELOW_CRITICAL_BOUND;MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.169209
+  },
+  {
+   "ticker": "WDC",
+   "company_name": "Western Digital",
+   "valuation_anomaly_reason": "MODEL_CONSENSUS_DIVERGENCE_CRITICAL",
+   "iv_price_ratio": 0.330705
+  }
+ ],
+ "watchlist": [
+  {
+   "ticker": "APA",
+   "company_name": "APA Corporation",
+   "sector_ticker": "XLE",
+   "current_price": 41.540001,
+   "mos_price_threshold": 39.499013,
+   "distance_to_mos_pct": 0.051672
+  },
+  {
+   "ticker": "SLB",
+   "company_name": "Schlumberger",
+   "sector_ticker": "XLE",
+   "current_price": 48.720001,
+   "mos_price_threshold": 45.977407,
+   "distance_to_mos_pct": 0.059651
+  },
+  {
+   "ticker": "GILD",
+   "company_name": "Gilead Sciences",
+   "sector_ticker": "XLV",
+   "current_price": 149.050003,
+   "mos_price_threshold": 128.135599,
+   "distance_to_mos_pct": 0.163221
+  },
+  {
+   "ticker": "AMGN",
+   "company_name": "Amgen",
+   "sector_ticker": "XLV",
+   "current_price": 421.51001,
+   "mos_price_threshold": 349.483588,
+   "distance_to_mos_pct": 0.206094
+  },
+  {
+   "ticker": "REGN",
+   "company_name": "Regeneron Pharmaceuticals",
+   "sector_ticker": "XLV",
+   "current_price": 758.27002,
+   "mos_price_threshold": 615.517035,
+   "distance_to_mos_pct": 0.231924
+  },
+  {
+   "ticker": "OXY",
+   "company_name": "Occidental Petroleum",
+   "sector_ticker": "XLE",
+   "current_price": 55.32,
+   "mos_price_threshold": 43.377801,
+   "distance_to_mos_pct": 0.275307
+  },
+  {
+   "ticker": "EOG",
+   "company_name": "EOG Resources",
+   "sector_ticker": "XLE",
+   "current_price": 137.759995,
+   "mos_price_threshold": 107.166428,
+   "distance_to_mos_pct": 0.285477
+  },
+  {
+   "ticker": "INCY",
+   "company_name": "Incyte",
+   "sector_ticker": "XLV",
+   "current_price": 121.349998,
+   "mos_price_threshold": 89.951353,
+   "distance_to_mos_pct": 0.349063
+  },
+  {
+   "ticker": "ABBV",
+   "company_name": "AbbVie",
+   "sector_ticker": "XLV",
+   "current_price": 261.589996,
+   "mos_price_threshold": 190.661924,
+   "distance_to_mos_pct": 0.37201
+  },
+  {
+   "ticker": "VLO",
+   "company_name": "Valero Energy",
+   "sector_ticker": "XLE",
+   "current_price": 387.609985,
+   "mos_price_threshold": 234.896356,
+   "distance_to_mos_pct": 0.650132
+  }
+ ],
+ "prices": {
+  "BKR": 54.639381,
+  "EXE": 84.089996,
+  "RMD": 221.100006
+ },
+ "benchmark": {
+  "ticker": "SPY",
+  "price": 762.630005
+ }
+}

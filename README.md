@@ -1,5 +1,20 @@
 # MacroPortfolioLocal v1.0.13 — Valuation Guardrails
 
+## Setup from GitHub
+
+1. `git clone https://github.com/johnes9875-debug/macro-portfolio-local.git`
+2. Copy `.env.example` to `.env` and put your FRED key in it. `.env` is git-ignored and never pushed.
+3. Run `RUN_ME.ipynb` as below. The first run downloads all market data into `data/` (also git-ignored).
+
+## After every successful run
+
+- `outputs/runs/<date>/<run>/execution_cockpit.html` is a one-page, offline cockpit:
+  status, key numbers, trade ticket, what needs attention, macro context, holdings, watchlist, track record.
+- `ledger/` records the run (holdings, trades, KPIs, forward track record) and is pushed to GitHub
+  automatically (`local.auto_push_ledger` in `config/settings.yaml`). See `ledger/README.md`.
+- Record what you actually bought in `ledger/actual_holdings.csv` or in the Streamlit app
+  (`scripts\start_dashboard.bat` → "My actual holdings").
+
 ## One supported workflow
 
 1. Extract the ZIP into its own folder.

@@ -12,7 +12,9 @@ portfolio:
   max_risky_sector_share: 0.7
   min_eligible_sectors_for_risky_cap: 2
   min_cash_weight: 0.0
-  optimizer_weight_epsilon: 1.0e-08
+  # Post-solve weights below this are zeroed (optimizer residue / non-executable
+  # positions such as BF.B 3.8e-8 and DLTR 0.4% in the 2026-11-11 run).
+  optimizer_weight_epsilon: 0.005
 universe:
   membership_mode: LIVE_ONLY_CURRENT_MEMBERSHIP
   http_timeout_seconds: 30
@@ -326,3 +328,6 @@ local:
   archive_key_outputs: true
   max_archived_runs: 180
   run_section_l_on_daily_close: false
+  # Run ledger (ledger/): record every successful run; optionally git-push it.
+  record_ledger: true
+  auto_push_ledger: true

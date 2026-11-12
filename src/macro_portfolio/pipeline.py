@@ -66,6 +66,7 @@ def run_pipeline(market_session, include_diagnostic_l: bool = False):
             build_daily_changes(root, run_dir)
             publish_latest(root, run_dir, run_id, market_session)
             finish_run(root, run_id, "SUCCESS", None)
+            _record_ledger_and_cockpit(ns, root, run_dir)
             try:
                 brief_path = run_dir / "daily_brief.md"
                 brief_text = brief_path.read_text(encoding="utf-8") if brief_path.exists() else ""
@@ -87,6 +88,29 @@ def run_pipeline(market_session, include_diagnostic_l: bool = False):
             except Exception:
                 pass
 
+
+
+def _record_ledger_and_cockpit(ns: dict, root: Path, run_dir: Path) -> None:
+    """Non-blocking post-success steps: run ledger, one-page cockpit, git push."""
+    local_cfg = ns.get("CONFIG", {}).get("local", {}) or {}
+    log = ns["logger"]
+    if not bool(local_cfg.get("record_ledger", True)):
+        return
+    try:
+        from .ledger import record_run, git_push_ledger
+        min_w = float(ns.get("CONFIG", {}).get("portfolio", {}).get("optimizer_weight_epsilon", 0.005))
+        snap = record_run(root, run_dir, min_weight=max(min_w, 0.005))
+        log.info("Ledger recorded: %s", snap["run_id"])
+        try:
+            from .cockpit import write_cockpit
+            write_cockpit(root, run_dir, snap)
+            log.info("Cockpit written: %s", run_dir / "execution_cockpit.html")
+        except Exception as cockpit_exc:
+            log.warning("Cockpit generation failed (non-blocking): %s", cockpit_exc)
+        if bool(local_cfg.get("auto_push_ledger", False)):
+            log.info("Ledger git push: %s", git_push_ledger(root, f"ledger: {snap['market_session']} {snap['run_id']}"))
+    except Exception as exc:
+        log.warning("Ledger step failed (non-blocking): %s", exc)
 
 def run_latest_pipeline(include_diagnostic_l: bool | None = None):
     """Run a fresh production cycle using the latest fully closed NYSE session.

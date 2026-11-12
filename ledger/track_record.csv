@@ -1,0 +1,2 @@
+from_session,to_session,days,from_run_id,invested,model_return,expected_return_for_period,spy_return,excess_vs_spy,cumulative_model,cumulative_spy,missing_prices
+2026-09-30,2026-11-11,42,LOCAL_20260930_172333,0.218315,0.011529,0.007224,-0.003698,0.015227,0.011529,-0.003698,
