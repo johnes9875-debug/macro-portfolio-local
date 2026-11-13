@@ -1,0 +1,91 @@
+{
+ "sessions_recorded": 2,
+ "horizons": [
+  21,
+  63
+ ],
+ "signals": [
+  {
+   "signal": "combined_score_z",
+   "name": "Sector combined signal",
+   "horizon": 21,
+   "runs_scored": 1,
+   "mean_ic": -0.23636363636363636,
+   "ic_t_stat": null,
+   "mean_quintile_spread_z": -0.8324932175699276
+  },
+  {
+   "signal": "company_selection_signal",
+   "name": "Company component",
+   "horizon": 21,
+   "runs_scored": 1,
+   "mean_ic": -0.3349381770434402,
+   "ic_t_stat": null,
+   "mean_quintile_spread_z": -0.6103381886218019
+  },
+  {
+   "signal": "consensus_upside_pct",
+   "name": "Analyst consensus upside (benchmark)",
+   "horizon": 21,
+   "runs_scored": 1,
+   "mean_ic": 0.3474121895174527,
+   "ic_t_stat": null,
+   "mean_quintile_spread_z": 0.39169970580835756
+  },
+  {
+   "signal": "expected_upside_pct",
+   "name": "Model expected upside",
+   "horizon": 21,
+   "runs_scored": 1,
+   "mean_ic": -0.05635189845716162,
+   "ic_t_stat": null,
+   "mean_quintile_spread_z": -0.34989875722482355
+  },
+  {
+   "signal": "master_alpha_score",
+   "name": "Master alpha (what the model ranks on)",
+   "horizon": 21,
+   "runs_scored": 1,
+   "mean_ic": -0.2898566582777109,
+   "ic_t_stat": null,
+   "mean_quintile_spread_z": -0.719984750242597
+  },
+  {
+   "signal": "sector_signal",
+   "name": "Sector component",
+   "horizon": 21,
+   "runs_scored": 1,
+   "mean_ic": -0.3700811221341031,
+   "ic_t_stat": null,
+   "mean_quintile_spread_z": -0.6664064379528469
+  },
+  {
+   "signal": "valuation_signal_normalized",
+   "name": "Valuation component",
+   "horizon": 21,
+   "runs_scored": 1,
+   "mean_ic": -0.027683553999343476,
+   "ic_t_stat": null,
+   "mean_quintile_spread_z": -0.33778050781179236
+  }
+ ],
+ "model_buys": [
+  {
+   "horizon": 21,
+   "runs_scored": 1,
+   "hit_rate": 0.6666666666666666,
+   "asymmetric_score": 0.6666666666666666,
+   "mean_z": 0.6597382849438421,
+   "positions_scored": 3
+  }
+ ],
+ "sector_layer_history": {
+  "months": 101,
+  "mean_ic": -0.015391539153915406,
+  "ic_t_stat": -0.3639224682925679,
+  "share_positive": 0.4752475247524752,
+  "from": "2018-06-30",
+  "to": "2026-11-30"
+ },
+ "note": "Fewer than 12 scored runs: treat every number as anecdotal."
+}

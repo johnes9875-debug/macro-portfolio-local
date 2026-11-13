@@ -28,3 +28,10 @@ scripts\backfill_ledger.bat              # record all archived runs, then push
 scripts\push_ledger.bat                  # push ledger/ only
 python -m macro_portfolio.ledger record <run_dir>
 ```
+
+## Signals and memos (v1.0.16)
+
+- `signals_history.csv`: every run's signals for all stocks (`kind=stock`) and sectors (`kind=sector`).
+- `signal_outcomes.csv`: each signal with its realised 21/63-session excess return, volatility-adjusted z and label.
+- `signal_quality.csv` / `signal_quality_summary.json`: rank IC, quintile spread, buy hit rate, asymmetric score.
+- `paper/memos/<date>/`: evidence packs and reviewer memos for that month's proposed orders.

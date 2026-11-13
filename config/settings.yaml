@@ -1,6 +1,6 @@
 system:
   project_name: Macro Regime Portfolio Engine
-  version: local-1.0.15-industry-betas
+  version: local-1.0.16-memos-signals
   random_seed: 42
 portfolio:
   base_currency: USD
@@ -360,6 +360,16 @@ local:
   # Run ledger (ledger/): record every successful run; optionally git-push it.
   record_ledger: true
   auto_push_ledger: true
+memos:
+  # Per-order thesis + red-team memos (src/macro_portfolio/memo.py). Evidence packs are
+  # always written after a run with a pending paper proposal. Memos can be written in a
+  # Claude chat, or by the API writer below (needs ANTHROPIC_API_KEY in .env + `pip install anthropic`).
+  # The memo is an opinion only; it never changes or approves an order.
+  api_enabled: false
+  model: claude-opus-5-5
+  max_searches: 6
+  max_tokens: 4000
+
 paper:
   # Paper-trading account (see ledger/paper/README.md). Orders are proposed after
   # the first successful run of each month and only fill after you approve them.

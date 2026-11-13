@@ -1,0 +1,135 @@
+{
+ "ticker": "NEM",
+ "side": "BUY",
+ "verdict": "SUPPORT_WITH_CONCERNS",
+ "summary": "Cheap on the model and still below consensus after a strong Q3, but it is the only order whose model bear case is below today's price, and the gold price has already fallen well below the level Q3 cash flow was earned at.",
+ "thesis": [
+  {
+   "text": "Model expected value is about 29% above the price and above the margin-of-safety buy price; consensus also sees about 14% upside, so the model is not out on a limb.",
+   "cites": [
+    "V.expected_upside",
+    "V.mos_price",
+    "C.upside",
+    "C.model_vs_consensus"
+   ]
+  },
+  {
+   "text": "Q3 was strong: record third-quarter adjusted net income, $1.9bn free cash flow, full-year production guidance of 5.3m oz kept and full-year AISC cut to about $1,520/oz.",
+   "cites": [
+    "N1",
+    "N2"
+   ]
+  },
+  {
+   "text": "The stock trades at about 7x EV/EBITDA against a base-case exit multiple near 10x, and shareholder returns are shrinking the share count.",
+   "cites": [
+    "M.current",
+    "M.exit_base",
+    "N1"
+   ]
+  },
+  {
+   "text": "Materials ranks 5th of 11 sectors with a macro-led positive signal.",
+   "cites": [
+    "S.rank",
+    "S.signal",
+    "S.alignment"
+   ]
+  }
+ ],
+ "red_team": [
+  {
+   "text": "Gold has fallen from an all-time high above $5,600 in January to around $4,100, with a one-year low of about $3,870 on 30 October. Q3's realised price was about $4,317, so Q4 revenue per ounce is already lower.",
+   "cites": [
+    "N3",
+    "N4",
+    "N2"
+   ]
+  },
+  {
+   "text": "Even so, the model forecasts 11.5% revenue growth in year 1. That looks inconsistent with spot gold sitting below the Q3 realised price.",
+   "cites": [
+    "V.yr1_growth",
+    "N2",
+    "N4"
+   ]
+  },
+  {
+   "text": "This is the only proposed order whose model bear value is below the current price, by about 11%. A gold slide is a real loss scenario, not a tail.",
+   "cites": [
+    "V.bear_upside",
+    "V.bear_value",
+    "P.price"
+   ]
+  },
+  {
+   "text": "NEM would carry about 36% of portfolio volatility at a 10% weight. Combined with CF that is roughly 70% of the risk in two names.",
+   "cites": [
+    "R.risk_share",
+    "R.standalone_vol",
+    "F.flag1"
+   ]
+  },
+  {
+   "text": "Markets were pricing a likely Fed hike in December. Higher real yields are the classic headwind for gold.",
+   "cites": [
+    "N5"
+   ]
+  }
+ ],
+ "what_would_change": [
+  {
+   "text": "Gold breaking back below the 30 October low (~$3,870) would turn this to CHALLENGE.",
+   "cites": [
+    "N4"
+   ]
+  },
+  {
+   "text": "Q4 AISC above guidance, or a cut to 2027 production guidance in February.",
+   "cites": []
+  }
+ ],
+ "news": [
+  {
+   "id": "N1",
+   "title": "Newmont Reports Third Quarter 2026 Results",
+   "publisher": "Newmont",
+   "date": "2026-10-22",
+   "url": "https://www.newmont.com/investors/news-release/news-details/2026/Newmont-Reports-Third-Quarter-2026-Results-with-Record-Third-Quarter-Adjusted-Net-Income-Positioned-to-Achieve-Full-Year-Guidance-Provides-Update-on-Red-Chris-Block-Cave-Project/default.aspx"
+  },
+  {
+   "id": "N2",
+   "title": "Newmont (NEM) Q3 2026 Earnings Call Transcript",
+   "publisher": "The Motley Fool",
+   "date": "2026-10-22",
+   "url": "https://www.fool.com/earnings/call-transcripts/2026/10/22/newmont-nem-q3-2026-earnings-call-transcript/"
+  },
+  {
+   "id": "N3",
+   "title": "Gold - price, statistics and history",
+   "publisher": "Trading Economics",
+   "date": "2026-11-02",
+   "url": "https://tradingeconomics.com/commodity/gold"
+  },
+  {
+   "id": "N4",
+   "title": "Gold hits over two-week high of US$4,146.63/oz on Nov 5",
+   "publisher": "Nation Thailand",
+   "date": "2026-11-06",
+   "url": "https://www.nationthailand.com/business/40073160"
+  },
+  {
+   "id": "N5",
+   "title": "Gold falls 0.5% on November 3 as dollar and yields rise",
+   "publisher": "Nation Thailand",
+   "date": "2026-11-04",
+   "url": "https://www.nationthailand.com/business/40073078"
+  }
+ ],
+ "schema": 1,
+ "session": "2026-11-11",
+ "run_id": "LOCAL_20261111_170230",
+ "author": "Claude (claude-opus-5-5) in chat, web search",
+ "written_at": "2026-11-13T09:00:00+00:00",
+ "disclaimer": "Reviewer opinion only. It does not change any order; you decide when you edit and approve."
+}

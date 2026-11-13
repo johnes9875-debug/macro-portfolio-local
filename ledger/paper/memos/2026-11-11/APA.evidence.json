@@ -1,0 +1,255 @@
+{
+ "ticker": "APA",
+ "company_name": "APA Corporation",
+ "session": "2026-11-11",
+ "run_id": "LOCAL_20261111_170230",
+ "side": "BUY",
+ "flagged": false,
+ "evidence": {
+  "O.side": {
+   "label": "Order side",
+   "value": "BUY",
+   "unit": ""
+  },
+  "O.shares": {
+   "label": "Order shares",
+   "value": 1135.0,
+   "unit": ""
+  },
+  "O.value": {
+   "label": "Order value",
+   "value": 53049.9,
+   "unit": "USD"
+  },
+  "O.target_weight": {
+   "label": "Target weight",
+   "value": 0.053061,
+   "unit": "fraction"
+  },
+  "P.price": {
+   "label": "Price at run",
+   "value": 46.740002,
+   "unit": "USD"
+  },
+  "V.bear_value": {
+   "label": "Model bear intrinsic value per share",
+   "value": 48.753424,
+   "unit": "USD"
+  },
+  "V.base_value": {
+   "label": "Model base intrinsic value per share",
+   "value": 63.517464,
+   "unit": "USD"
+  },
+  "V.bull_value": {
+   "label": "Model bull intrinsic value per share",
+   "value": 78.185595,
+   "unit": "USD"
+  },
+  "V.expected_value": {
+   "label": "Model expected intrinsic value per share",
+   "value": 63.493487,
+   "unit": "USD"
+  },
+  "V.expected_upside": {
+   "label": "Model expected upside",
+   "value": 0.35844,
+   "unit": "fraction"
+  },
+  "V.bear_upside": {
+   "label": "Upside even in model bear case",
+   "value": 0.043077,
+   "unit": "fraction"
+  },
+  "V.mos_price": {
+   "label": "Margin-of-safety buy price",
+   "value": 52.054232,
+   "unit": "USD"
+  },
+  "V.mos_met": {
+   "label": "Price below margin-of-safety price",
+   "value": true,
+   "unit": ""
+  },
+  "V.model": {
+   "label": "Valuation model",
+   "value": "MIDCYCLE_CORPORATE_FCFF",
+   "unit": ""
+  },
+  "V.confidence": {
+   "label": "Valuation confidence",
+   "value": 0.698358,
+   "unit": ""
+  },
+  "C.target": {
+   "label": "Analyst consensus target",
+   "value": 50.0,
+   "unit": "USD"
+  },
+  "C.upside": {
+   "label": "Consensus upside",
+   "value": 0.069748,
+   "unit": "fraction"
+  },
+  "C.model_vs_consensus": {
+   "label": "Model expected value / consensus target",
+   "value": 1.26987,
+   "unit": ""
+  },
+  "F.review": {
+   "label": "Valuation review flag",
+   "value": "NORMAL",
+   "unit": ""
+  },
+  "F.review_reason": {
+   "label": "Review reason",
+   "value": "",
+   "unit": ""
+  },
+  "V.terminal_share": {
+   "label": "Share of value from terminal value",
+   "value": 0.70457,
+   "unit": "fraction"
+  },
+  "V.discount_rate": {
+   "label": "Discount rate",
+   "value": 0.074779,
+   "unit": "fraction"
+  },
+  "V.terminal_growth": {
+   "label": "Terminal growth",
+   "value": 0.02,
+   "unit": "fraction"
+  },
+  "K.raw_beta": {
+   "label": "Company regression beta",
+   "value": 0.514912,
+   "unit": ""
+  },
+  "K.valuation_beta": {
+   "label": "Beta used in valuation",
+   "value": 0.729497,
+   "unit": ""
+  },
+  "K.beta_source": {
+   "label": "Beta source",
+   "value": "BOTTOM_UP_INDUSTRY",
+   "unit": ""
+  },
+  "I.driver": {
+   "label": "Reverse-DCF driver",
+   "value": "REVENUE_GROWTH",
+   "unit": ""
+  },
+  "I.market_implied": {
+   "label": "Market-implied value of driver",
+   "value": -0.091521,
+   "unit": ""
+  },
+  "I.model_base": {
+   "label": "Model base-case value of driver",
+   "value": -0.028155,
+   "unit": ""
+  },
+  "M.metric": {
+   "label": "Multiple",
+   "value": "EV_EBITDA",
+   "unit": ""
+  },
+  "M.current": {
+   "label": "Current multiple",
+   "value": 3.108833,
+   "unit": ""
+  },
+  "M.exit_base": {
+   "label": "Exit multiple in base case",
+   "value": 4.107888,
+   "unit": ""
+  },
+  "V.yr1_growth": {
+   "label": "Forecast revenue growth year 1",
+   "value": -0.086309,
+   "unit": "fraction"
+  },
+  "V.yr5_growth": {
+   "label": "Forecast revenue growth year 5",
+   "value": 0.03,
+   "unit": "fraction"
+  },
+  "V.yr1_margin": {
+   "label": "Forecast EBIT margin year 1",
+   "value": 0.439852,
+   "unit": "fraction"
+  },
+  "V.yr5_margin": {
+   "label": "Forecast EBIT margin year 5",
+   "value": 0.350803,
+   "unit": "fraction"
+  },
+  "P.low_52w": {
+   "label": "52-week low",
+   "value": 23.379999,
+   "unit": "USD"
+  },
+  "P.high_52w": {
+   "label": "52-week high",
+   "value": 52.82,
+   "unit": "USD"
+  },
+  "P.vs_low_52w": {
+   "label": "Price vs 52-week low",
+   "value": 0.999145,
+   "unit": "fraction"
+  },
+  "R.risk_share": {
+   "label": "Share of portfolio volatility",
+   "value": 0.198843,
+   "unit": "fraction"
+  },
+  "R.standalone_vol": {
+   "label": "Standalone annual volatility",
+   "value": 0.446476,
+   "unit": "fraction"
+  },
+  "R.expected_return": {
+   "label": "Optimizer expected annual return",
+   "value": 0.141171,
+   "unit": "fraction"
+  },
+  "S.sector": {
+   "label": "Sector ETF",
+   "value": "XLE",
+   "unit": ""
+  },
+  "S.rank": {
+   "label": "Sector combined rank (1 = best of 11)",
+   "value": 3,
+   "unit": ""
+  },
+  "S.signal": {
+   "label": "Sector combined signal",
+   "value": "Positive",
+   "unit": ""
+  },
+  "S.alignment": {
+   "label": "Macro vs market alignment",
+   "value": "Macro-led positive",
+   "unit": ""
+  },
+  "S.relative_3m": {
+   "label": "Sector 3-month return vs SPY",
+   "value": 0.064805,
+   "unit": "fraction"
+  },
+  "G.regime": {
+   "label": "Economic regime",
+   "value": "Transitional / mixed",
+   "unit": ""
+  },
+  "G.top_probability": {
+   "label": "Top regime probability",
+   "value": 0.327275,
+   "unit": "fraction"
+  }
+ }
+}

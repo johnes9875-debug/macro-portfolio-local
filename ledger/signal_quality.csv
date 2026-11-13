@@ -1,0 +1,9 @@
+market_session,kind,horizon,signal,signal_name,n,rank_ic,top_minus_bottom_quintile_z,hit_rate,asymmetric_score,mean_z
+2026-09-30,sector,21,combined_score_z,Sector combined signal,11,-0.23636363636363636,-0.8324932175699276,,,
+2026-09-30,stock,21,master_alpha_score,Master alpha (what the model ranks on),38,-0.2898566582777109,-0.719984750242597,,,
+2026-09-30,stock,21,sector_signal,Sector component,38,-0.3700811221341031,-0.6664064379528469,,,
+2026-09-30,stock,21,company_selection_signal,Company component,38,-0.3349381770434402,-0.6103381886218019,,,
+2026-09-30,stock,21,valuation_signal_normalized,Valuation component,38,-0.027683553999343476,-0.33778050781179236,,,
+2026-09-30,stock,21,expected_upside_pct,Model expected upside,38,-0.05635189845716162,-0.34989875722482355,,,
+2026-09-30,stock,21,consensus_upside_pct,Analyst consensus upside (benchmark),38,0.3474121895174527,0.39169970580835756,,,
+2026-09-30,portfolio,21,model_buys,Stocks the model held/bought,3,,,0.6666666666666666,0.6666666666666666,0.6597382849438421

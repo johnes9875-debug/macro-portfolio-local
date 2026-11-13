@@ -53,6 +53,30 @@ The deduplicated master universe is:
 All investable names must be mapped to one of the 11 canonical GICS sectors
 before Section E is allowed to continue.
 
+## v1.0.16 order memos and signal tracking
+
+**Order memos (reviewer, never decider).** When a paper proposal is waiting for approval, each run writes an
+evidence pack per order to `ledger/paper/memos/<proposal date>/<TICKER>.evidence.json`: valuation scenarios,
+consensus, reverse DCF, cost of capital, risk share, sector signal and flags, each with an id such as
+`V.base_value`. A memo (`<TICKER>.json`) gives a verdict (SUPPORT / SUPPORT_WITH_CONCERNS / CHALLENGE), a thesis, a red team
+("why the model might be wrong") and what would change the view. Every point must cite an evidence id or a
+dated news source; `memo.validate` rejects uncited claims, unknown ids, undated news and flagged orders with
+fewer than three red-team points. Packs are frozen when first written so the memo matches the order prices.
+Memos show beside the orders in the Paper trading tab, in the cockpit and in the Claude artifact. Write them in
+a Claude chat, or with `scripts\memo_generate.bat` (Anthropic API + web search; set `memos.api_enabled: true`,
+add `ANTHROPIC_API_KEY` to `.env`, `pip install anthropic`). `scripts\memo_status.bat` checks them.
+The verdict never changes an order.
+
+**Signal tracking.** Each run appends every stock's and sector's signals to `ledger/signals_history.csv`.
+`signal_eval.evaluate` scores them against the stock's return minus SPY's, divided by its prior 63-day
+volatility, over 21 and 63 trading days: rank IC, top-minus-bottom quintile, five-class labels, hit rate of
+the model's buys and an asymmetric score (correct buy +1, false buy -1.5). It also scores the macro sector
+layer over Section L's monthly history. Results: `ledger/signal_quality*.csv/json` and the cockpit's
+"Do the signals work?" section. With fewer than 12 scored runs every number is labelled anecdotal.
+
+First readings (anecdotal): 30 Sep run, 21 days: master alpha rank IC -0.29, consensus upside +0.35; 2 of 3
+model buys beat SPY after volatility adjustment. Sector layer 2018-2026: mean monthly IC -0.02 (t -0.4).
+
 ## v1.0.15 bottom-up industry betas (config: `valuation.industry_beta`)
 
 The discount rate's beta now comes from the company's industry, not its own 2-year regression.

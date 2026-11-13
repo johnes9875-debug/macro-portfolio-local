@@ -217,6 +217,85 @@ SIDE_PILL = {"BUY": "p-buy", "ADD": "p-buy", "SELL": "p-sell", "TRIM": "p-sell"}
 SIDE_LABEL = {"BUY": "Buy", "ADD": "Add", "SELL": "Sell", "TRIM": "Trim"}
 
 
+
+VERDICT_PILL = {"SUPPORT": "p-buy", "SUPPORT_WITH_CONCERNS": "p-rev", "CHALLENGE": "p-sell"}
+
+
+def render_memos(memos: dict) -> str:
+    if not memos:
+        return ""
+    o = ["<h2>Order memos (reviewer, not decider)</h2>",
+         "<p class='sub'>One memo per proposed order: why the model wants it, why it might be wrong, and what would change the view. "
+         "Every point cites the run's evidence (ids like V.base_value) or a dated news source. The verdict is an opinion; "
+         "orders only change when you edit and approve them.</p>"]
+    for t, m in memos.items():
+        memo, errs = m.get("memo"), m.get("errors") or []
+        if not memo:
+            o.append(f"<details><summary><b>{_e(t)}</b> <span class='mut'>no memo yet (evidence pack ready)</span></summary></details>")
+            continue
+        news = {n["id"]: n for n in memo.get("news", [])}
+        ev = m.get("evidence", {})
+
+        def cite(k):
+            if k in news:
+                n = news[k]
+                return f"<a href='{_e(n['url'])}' title='{_e(n.get('title', ''))}'>{_e(k)}</a>"
+            e = ev.get(k)
+            if e:
+                v = e["value"]
+                v = _pct(v) if e.get("unit") == "fraction" and isinstance(v, (int, float)) else (f"{v:,.2f}" if isinstance(v, float) else v)
+                return f"<span title='{_e(e['label'])}: {_e(v)}'>{_e(k)}</span>"
+            return f"<span class='neg'>{_e(k)}?</span>"
+
+        def items(key):
+            return "".join(f"<li>{_e(c['text'])} <span class='sub'>[{', '.join(cite(k) for k in c.get('cites', []))}]</span></li>"
+                           for c in memo.get(key, []))
+        status = "" if not errs else f"<span class='pill p-sell'>INVALID: {_e('; '.join(errs[:3]))}</span>"
+        o.append(f"<details{' open' if memo.get('verdict') == 'CHALLENGE' else ''}><summary><b>{_e(t)}</b> "
+                 f"<span class='pill {VERDICT_PILL.get(memo.get('verdict'), 'p-n')}'>{_e(str(memo.get('verdict', '')).replace('_', ' ').title())}</span> "
+                 f"<span class='mut'>{_e(memo.get('summary', ''))}</span> {status}</summary>"
+                 f"<div class='grid2'><div><h2 style='font-size:13px'>Thesis</h2><ul>{items('thesis')}</ul></div>"
+                 f"<div><h2 style='font-size:13px'>Why the model might be wrong</h2><ul>{items('red_team')}</ul></div></div>"
+                 f"<h2 style='font-size:13px'>What would change the view</h2><ul>{items('what_would_change')}</ul>"
+                 f"<p class='sub'>Sources: " + "; ".join(f"{_e(n['id'])} <a href='{_e(n['url'])}'>{_e(n.get('publisher', ''))}, {_e(n['date'])}</a>"
+                                                    for n in memo.get("news", [])) +
+                 f". Written {_e(str(memo.get('written_at', ''))[:10])} by {_e(memo.get('author', ''))}.</p></details>")
+    return "".join(o)
+
+
+def render_signal_quality(sq: dict) -> str:
+    if not sq:
+        return ""
+    o = ["<h2>Do the signals work?</h2>",
+         f"<p class='sub'>Every run records the model's signals for all stocks and sectors ({sq.get('sessions_recorded', 0)} runs so far). "
+         "Each signal is later scored against what happened: the stock's return minus SPY's, divided by its own volatility, "
+         "over 21 and 63 trading days (about 1 and 3 months). Rank IC = correlation between the signal's ranking and the outcome ranking "
+         "(0 = no skill; +0.05 sustained is good). For the model's buys a false buy scores -1.5 and a correct one +1.</p>"]
+    if sq.get("note"):
+        o.append(f"<p><span class='pill warn'>{_e(sq['note'])}</span></p>")
+    sigs = sq.get("signals") or []
+    if sigs:
+        o.append("<table><tr><th>Signal</th><th class='r'>Horizon</th><th class='r'>Runs scored</th><th class='r'>Mean rank IC</th>"
+                 "<th class='r'>Top-minus-bottom quintile (vol units)</th></tr>")
+        for x in sorted(sigs, key=lambda x: (x["horizon"], x["signal"] != "master_alpha_score", x["name"])):
+            ic = x.get("mean_ic")
+            o.append(f"<tr><td>{_e(x['name'])}</td><td class='r'>{x['horizon']}d</td><td class='r'>{x['runs_scored']}</td>"
+                     f"<td class='r {_cls(ic)}'>{_num(ic)}</td><td class='r {_cls(x.get('mean_quintile_spread_z'))}'>{_num(x.get('mean_quintile_spread_z'))}</td></tr>")
+        o.append("</table>")
+    else:
+        o.append("<p class='mut'>No run is old enough to score yet (needs 21 trading days).</p>")
+    for b in sq.get("model_buys") or []:
+        o.append(f"<p>Model buys, {b['horizon']} days: <b>{_pct(b['hit_rate'], 0)}</b> beat SPY after adjusting for volatility "
+                 f"({b['positions_scored']} positions over {b['runs_scored']} runs); asymmetric score <b class='{_cls(b['asymmetric_score'])}'>{_num(b['asymmetric_score'])}</b> "
+                 f"(range -1.5 to +1).</p>")
+    sl = sq.get("sector_layer_history") or {}
+    if sl:
+        o.append(f"<p>Macro sector layer, history ({_e(sl['from'])} to {_e(sl['to'])}, {sl['months']} months of Section L tilts vs next-month sector returns): "
+                 f"mean rank IC <b class='{_cls(sl['mean_ic'])}'>{_num(sl['mean_ic'], 3)}</b>, t-stat {_num(sl.get('ic_t_stat'))}, "
+                 f"positive in {_pct(sl['share_positive'], 0)} of months.</p>")
+    return "".join(o)
+
+
 def _sparkline(values: list[float], w=320, h=70) -> str:
     vals = [v for v in values if v is not None]
     if len(vals) < 2:
@@ -300,6 +379,8 @@ def render_cockpit(snap: dict, track: pd.DataFrame | None = None, runs: pd.DataF
     out.append("<p class='sub'>“Below buy price” = how far the price sits under the margin-of-safety entry price. Higher is cheaper.</p>")
 
     # ---- risk / limits and valuation sheets (v1.0.14)
+    if snap.get("memos"):
+        out.append(render_memos(snap["memos"]))
     if snap.get("risk"):
         out.append(render_risk(snap["risk"]))
     if snap.get("valuation_sheets"):
@@ -403,6 +484,8 @@ def render_cockpit(snap: dict, track: pd.DataFrame | None = None, runs: pd.DataF
                    "Holdings at each run marked to the next run's close; cash earns 0. This is a paper record of the model, not your account.</p>")
     else:
         out.append("<p class='mut'>Starts after the second recorded run.</p>")
+    if snap.get("signal_quality"):
+        out.append(render_signal_quality(snap["signal_quality"]))
 
     out.append("<details><summary>Raw snapshot (JSON)</summary><pre style='font-size:11px;white-space:pre-wrap'>"
                + _e(json.dumps(snap, indent=1)[:20000]) + "</pre></details>")

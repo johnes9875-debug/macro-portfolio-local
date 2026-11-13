@@ -1,0 +1,143 @@
+{
+ "ticker": "CF",
+ "side": "BUY",
+ "verdict": "CHALLENGE",
+ "summary": "The model values a supply-shocked nitrogen market as if the shock were the base case, while the news flow is a live peace process that would unwind it. Combined with a third of portfolio risk in one name, this is the order I would question hardest.",
+ "thesis": [
+  {
+   "text": "Model expected value is about 48% above the price and the bear case is about 13% above it, at under 5x EV/EBITDA.",
+   "cites": [
+    "V.expected_upside",
+    "V.bear_upside",
+    "M.current"
+   ]
+  },
+  {
+   "text": "Q3 net sales rose to $1.86bn from $1.66bn, with ammonia prices up and volumes 7% higher. The company says nitrogen supply-demand remains constructive into 2027.",
+   "cites": [
+    "N1"
+   ]
+  },
+  {
+   "text": "About 37% of European ammonia capacity was offline or curtailed in October, a structural cost advantage for US gas-based producers.",
+   "cites": [
+    "N2"
+   ]
+  },
+  {
+   "text": "The model already assumes revenue falls about 8% next year, so some normalisation is in the base case.",
+   "cites": [
+    "V.yr1_growth"
+   ]
+  }
+ ],
+ "red_team": [
+  {
+   "text": "The current tightness is tied to a Middle East supply shock. Oil fell about 24% in the first ten days of November on US-Iran diplomacy hopes; a deal that reopens Gulf supply would hit nitrogen prices too.",
+   "cites": [
+    "N1",
+    "N3"
+   ]
+  },
+  {
+   "text": "CF is valued with the standard corporate DCF, not the mid-cycle model used for APA. A -8% year-1 revenue step may be far too gentle if the shock unwinds, and the market's reverse DCF implies about -11% a year.",
+   "cites": [
+    "V.model",
+    "V.yr1_growth",
+    "I.market_implied"
+   ]
+  },
+  {
+   "text": "Consensus sees only about 5% upside; the model is about 1.4x consensus, hence the review flag. Q3 EPS of $2.87 also missed the $3.00 consensus.",
+   "cites": [
+    "C.upside",
+    "C.model_vs_consensus",
+    "F.review",
+    "N4"
+   ]
+  },
+  {
+   "text": "At a 10% weight CF would carry about 34% of portfolio volatility on its own, and the system has raised a concentration warning.",
+   "cites": [
+    "R.risk_share",
+    "F.flag2"
+   ]
+  },
+  {
+   "text": "The beta is borrowed: CF's own regression beta is negative (-0.30). The 0.92 valuation beta is the industry's, so the discount rate is a modelling choice.",
+   "cites": [
+    "K.raw_beta",
+    "K.valuation_beta"
+   ]
+  },
+  {
+   "text": "Claims on cash: a secondary (AI-written) summary reports a $683m Canadian transfer-pricing liability that drove $131m of Q3 interest expense, plus a $3.7bn Blue Point One project now under construction. Verify the tax figure in the 10-Q before relying on it.",
+   "cites": [
+    "N5"
+   ]
+  }
+ ],
+ "what_would_change": [
+  {
+   "text": "A collapse of the US-Iran talks, or Q4 ammonia prices holding near Q3 levels, would move this to SUPPORT_WITH_CONCERNS.",
+   "cites": [
+    "N3"
+   ]
+  },
+  {
+   "text": "Running CF through a mid-cycle valuation and still clearing the margin of safety would remove most of my objection.",
+   "cites": [
+    "V.model"
+   ]
+  },
+  {
+   "text": "Options if you agree: skip the order, or cut it to about 3-5% so CF's risk share falls below 20%.",
+   "cites": [
+    "R.risk_share"
+   ]
+  }
+ ],
+ "news": [
+  {
+   "id": "N1",
+   "title": "CF Industries Reports First Nine Months 2026 Net Earnings of $1.78 Billion, Adjusted EBITDA of $3.01 Billion",
+   "publisher": "Business Wire",
+   "date": "2026-11-04",
+   "url": "https://www.businesswire.com/news/home/20261104372347/en/CF-Industries-Holdings-Inc.-Reports-First-Nine-Months-2026-Net-Earnings-of-$1.78-Billion-Adjusted-EBITDA-of-$3.01-Billion"
+  },
+  {
+   "id": "N2",
+   "title": "Nitrogen market update: CF Industries reports Q3 2026 results",
+   "publisher": "Ag Navigator",
+   "date": "2026-11-05",
+   "url": "https://www.agnavigator.com/Article/2026/11/05/nitrogen-market-update-cf-industries-reports-q3-2026-results/"
+  },
+  {
+   "id": "N3",
+   "title": "Commodities Outlook Into Year End: Oil slump extends on diplomacy hopes",
+   "publisher": "MUFG Research",
+   "date": "2026-11-10",
+   "url": "https://mufgresearch.com/commodities/commodities-update-november-10-2026/"
+  },
+  {
+   "id": "N4",
+   "title": "CF Industries (CF) Q3 2026 Earnings Results",
+   "publisher": "MarketBeat",
+   "date": "2026-11-04",
+   "url": "https://www.marketbeat.com/earnings/reports/2026-11-4-cf-industries-holdings-inc-stock/"
+  },
+  {
+   "id": "N5",
+   "title": "CF Q3 Earnings: $2.5 Billion Operating Cash Flow Amid Capital Expansion",
+   "publisher": "Panabee (AI-generated)",
+   "date": "2026-11-04",
+   "url": "https://www.panabee.com/news/cf-cf-earnings-q3-2026"
+  }
+ ],
+ "schema": 1,
+ "session": "2026-11-11",
+ "run_id": "LOCAL_20261111_170230",
+ "author": "Claude (claude-opus-5-5) in chat, web search",
+ "written_at": "2026-11-13T09:00:00+00:00",
+ "disclaimer": "Reviewer opinion only. It does not change any order; you decide when you edit and approve."
+}

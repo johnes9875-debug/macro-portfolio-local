@@ -1,0 +1,115 @@
+{
+ "ticker": "APA",
+ "side": "BUY",
+ "verdict": "SUPPORT_WITH_CONCERNS",
+ "summary": "The right valuation tool (mid-cycle) and a good quarter support it, and the order is already the smallest. But the stock has doubled off its low on war-elevated oil, and oil is falling fast on peace talks.",
+ "thesis": [
+  {
+   "text": "APA is valued on a mid-cycle cash-flow model, so the value does not rely on today's oil price. Expected value is about 36% above the price, and the bear case is still slightly above it.",
+   "cites": [
+    "V.model",
+    "V.expected_upside",
+    "V.bear_upside"
+   ]
+  },
+  {
+   "text": "Q3 beat on production: US oil output was 128k bbl/d, 4k above guidance. The quarter produced $699m of free cash flow, $537m was returned to shareholders, and debt is down $2.8bn since end-2024.",
+   "cites": [
+    "N1"
+   ]
+  },
+  {
+   "text": "The stock trades at about 3x EV/EBITDA, and consensus also sees upside. Energy ranks 3rd of 11 sectors.",
+   "cites": [
+    "M.current",
+    "C.upside",
+    "S.rank"
+   ]
+  },
+  {
+   "text": "The proposed order is the smallest of the four, at about 5.3%.",
+   "cites": [
+    "O.target_weight",
+    "O.value"
+   ]
+  }
+ ],
+ "red_team": [
+  {
+   "text": "Brent was about $89.6 on 10 November, down nearly 24% since the start of the month on US-Iran diplomacy hopes. APA's Q3 cash flow was earned at much higher prices.",
+   "cites": [
+    "N2"
+   ]
+  },
+  {
+   "text": "The stock is about 100% above its 52-week low, so much of the war premium may already be in the price that a deal would remove.",
+   "cites": [
+    "P.vs_low_52w",
+    "P.low_52w"
+   ]
+  },
+  {
+   "text": "Its 45% standalone volatility is the highest of the four orders. Even at 5% weight it takes about 20% of portfolio risk.",
+   "cites": [
+    "R.standalone_vol",
+    "R.risk_share"
+   ]
+  },
+  {
+   "text": "The OPEC+ ministerial on 29 November could schedule the unwinding of about 2m bbl/d of cuts, a supply risk for 2027 prices.",
+   "cites": [
+    "N3"
+   ]
+  },
+  {
+   "text": "Valuation confidence is the lowest of the four orders, and about 70% of the value is terminal.",
+   "cites": [
+    "V.confidence",
+    "V.terminal_share"
+   ]
+  }
+ ],
+ "what_would_change": [
+  {
+   "text": "A signed US-Iran deal with Brent heading toward the $70s, as the EIA projects a year out, would move this to CHALLENGE unless the mid-cycle value is re-checked.",
+   "cites": [
+    "N3"
+   ]
+  },
+  {
+   "text": "Waiting until after the 29 November OPEC+ meeting is a reasonable alternative to approving now.",
+   "cites": [
+    "N3"
+   ]
+  }
+ ],
+ "news": [
+  {
+   "id": "N1",
+   "title": "APA Corporation announces third-quarter 2026 financial and operational results (8-K Ex. 99.1)",
+   "publisher": "SEC EDGAR",
+   "date": "2026-11-04",
+   "url": "https://www.sec.gov/Archives/edgar/data/0001841666/000184166626000063/exhibit9913q26earningsrele.htm"
+  },
+  {
+   "id": "N2",
+   "title": "Commodities Outlook Into Year End: Oil slump extends on diplomacy hopes",
+   "publisher": "MUFG Research",
+   "date": "2026-11-10",
+   "url": "https://mufgresearch.com/commodities/commodities-update-november-10-2026/"
+  },
+  {
+   "id": "N3",
+   "title": "OPEC+ quota reset could cap 2027 oil supply",
+   "publisher": "Crux Investor",
+   "date": "2026-11-02",
+   "url": "https://www.cruxinvestor.com/posts/opec-quota-reset-could-cap-2027-oil-supply-reprice-non-opec-producers"
+  }
+ ],
+ "schema": 1,
+ "session": "2026-11-11",
+ "run_id": "LOCAL_20261111_170230",
+ "author": "Claude (claude-opus-5-5) in chat, web search",
+ "written_at": "2026-11-13T09:00:00+00:00",
+ "disclaimer": "Reviewer opinion only. It does not change any order; you decide when you edit and approve."
+}

@@ -1,0 +1,127 @@
+{
+ "ticker": "MO",
+ "side": "BUY",
+ "verdict": "SUPPORT_WITH_CONCERNS",
+ "summary": "Operating news supports the position (guidance raised, low volatility), but the model's 50% premium to consensus comes mostly from a revenue-growth path the market and history do not support, and the price is at its 52-week high.",
+ "thesis": [
+  {
+   "text": "Model expected value is about 42% above the price, and even the bear case is about 15% above it. The price is below the margin-of-safety buy price.",
+   "cites": [
+    "V.expected_upside",
+    "V.bear_upside",
+    "V.mos_met"
+   ]
+  },
+  {
+   "text": "Altria raised 2026 adjusted EPS guidance to $5.66-$5.74 (4.5%-6% growth) after Q3 adjusted EPS grew 4.8%, and expanded its buyback.",
+   "cites": [
+    "N1",
+    "N2"
+   ]
+  },
+  {
+   "text": "It is a low-risk holding: about 22% standalone volatility and only about 11% of portfolio risk at a 10% weight. Staples rank 2nd of 11 sectors.",
+   "cites": [
+    "R.standalone_vol",
+    "R.risk_share",
+    "S.rank"
+   ]
+  },
+  {
+   "text": "Leverage is at target, with debt/EBITDA of 1.9x.",
+   "cites": [
+    "N3"
+   ]
+  }
+ ],
+ "red_team": [
+  {
+   "text": "Consensus target is about 5% BELOW the price, and the model value is about 1.5x consensus. That gap is why the order is flagged for review.",
+   "cites": [
+    "C.upside",
+    "C.model_vs_consensus",
+    "F.review",
+    "F.review_reason"
+   ]
+  },
+  {
+   "text": "The reverse DCF says the price implies revenue shrinking about 5% a year. The model instead assumes growth rising to 3.5% by year 5. For a business whose domestic cigarette volume fell about 4% (adjusted) in Q3, the model's growth fade, not a pricing error by the market, is the likeliest source of the 'upside'.",
+   "cites": [
+    "I.market_implied",
+    "I.model_base",
+    "V.yr5_growth",
+    "N3"
+   ]
+  },
+  {
+   "text": "About 81% of the value sits in the terminal value, at a 6.7% discount rate. A one-point higher discount rate would remove a large share of the margin.",
+   "cites": [
+    "V.terminal_share",
+    "V.discount_rate"
+   ]
+  },
+  {
+   "text": "The beta is borrowed: the company's own regression beta is negative (-0.15), so the 0.51 valuation beta comes entirely from the industry. The cost of equity is a modelling choice, not an observation.",
+   "cites": [
+    "K.raw_beta",
+    "K.valuation_beta",
+    "K.beta_source"
+   ]
+  },
+  {
+   "text": "The stock is at its 52-week high, about 41% above the low, so this buys after the re-rating rather than before it. Oral tobacco income fell 3.7% in Q3 on promotion spending.",
+   "cites": [
+    "P.high_52w",
+    "P.vs_low_52w",
+    "N3"
+   ]
+  }
+ ],
+ "what_would_change": [
+  {
+   "text": "Consensus targets moving up toward the price after the guidance raise would remove most of the flag.",
+   "cites": [
+    "C.target"
+   ]
+  },
+  {
+   "text": "Cigarette volume declines re-accelerating toward the industry's ~5%, or on! share losses, would turn this to CHALLENGE.",
+   "cites": [
+    "N3"
+   ]
+  },
+  {
+   "text": "If you want to act on the flag without dropping the name: half size (about 5%) keeps the exposure while respecting the review.",
+   "cites": []
+  }
+ ],
+ "news": [
+  {
+   "id": "N1",
+   "title": "Altria Reports 2026 Third-Quarter and Nine-Months Results; Raises 2026 Full-Year Earnings Guidance (8-K Ex. 99.1)",
+   "publisher": "SEC EDGAR",
+   "date": "2026-10-29",
+   "url": "https://www.sec.gov/Archives/edgar/data/0000764180/000076418026000112/exhibit991erq32026.htm"
+  },
+  {
+   "id": "N2",
+   "title": "Earnings call transcript: Altria tops Q3 2026 forecasts and lifts outlook",
+   "publisher": "Investing.com",
+   "date": "2026-11-02",
+   "url": "https://www.investing.com/news/transcripts/earnings-call-transcript-altria-tops-q3-2026-forecasts-and-lifts-outlook-93CH-4989427"
+  },
+  {
+   "id": "N3",
+   "title": "Altria (MO) Q3 2026 Earnings Call Transcript",
+   "publisher": "The Motley Fool via Webull",
+   "date": "2026-10-29",
+   "url": "https://www.webull.com/news/15832880428950528"
+  }
+ ],
+ "schema": 1,
+ "session": "2026-11-11",
+ "run_id": "LOCAL_20261111_170230",
+ "author": "Claude (claude-opus-5-5) in chat, web search",
+ "written_at": "2026-11-13T09:00:00+00:00",
+ "disclaimer": "Reviewer opinion only. It does not change any order; you decide when you edit and approve."
+}

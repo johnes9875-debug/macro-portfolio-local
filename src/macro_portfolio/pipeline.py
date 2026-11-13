@@ -13,7 +13,7 @@ from .state import finish_run, start_run
 from .notify import send_telegram
 
 SECTION_ORDER = ["b", "c", "d", "e", "f", "g", "h", "i", "j", "k"]
-CODE_VERSION = "local-1.0.15-industry-betas"
+CODE_VERSION = "local-1.0.16-memos-signals"
 
 
 def _section_path(letter: str) -> Path:

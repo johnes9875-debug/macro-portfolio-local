@@ -100,6 +100,7 @@ svg text{fill:var(--mut);font:11px var(--f-num)}
 
   <section class="card" id="ticket"><h2>Trade ticket</h2><div class="scroll" id="ticketBody"></div><div class="sub" id="notTraded"></div></section>
 
+  <section class="card" id="memos"><h2>Order memos <span class="mut" style="font-weight:400;font-size:13px">reviewer, not decider</span></h2><div class="sub" id="memoNote"></div><div id="memoBody"></div></section>
   <section class="card" id="paper">
     <h2>Paper account</h2>
     <div class="kpis" id="paperKpis"></div>
@@ -142,6 +143,7 @@ svg text{fill:var(--mut);font:11px var(--f-num)}
 
   <section class="card" id="track"><h2 id="trackTitle">Track record</h2><div id="trackChart"></div><div class="scroll"><table id="trackTbl"></table></div><div class="sub" id="trackNote"></div></section>
 
+  <section class="card" id="signals"><h2>Do the signals work?</h2><div class="sub" id="sigNote"></div><div class="scroll"><table id="sigTbl"></table></div><div id="sigExtra"></div></section>
   <section class="card" id="positions">
     <h2>My actual positions</h2>
     <div class="sub">What you really hold. Saved here for every device you sign in on. Copy as CSV to paste into ledger/actual_holdings.csv on GitHub.</div>
@@ -272,6 +274,8 @@ function render(){
   renderPaper(s);
   renderRisk(s);
   renderSheets(s);
+  renderMemos(s);
+  renderSignals(s);
   renderPositions();
 }
 
@@ -375,6 +379,43 @@ function renderSheets(s){
   $("sheetBody").innerHTML = h + `</div>`;
 }
 $("sheetNav").addEventListener("click", e => { const b = e.target.closest("button[data-sheet]"); if (!b) return; sheetSel = b.dataset.sheet; render(); });
+
+
+const safeUrl = u => /^https?:\/\//i.test(String(u || "")) ? String(u) : "#";
+const VERDICT = {SUPPORT: ["p-buy", "Support"], SUPPORT_WITH_CONCERNS: ["p-rev", "Support with concerns"], CHALLENGE: ["p-sell", "Challenge"]};
+function renderMemos(s){
+  const ms = s.memos || {};
+  const keys = Object.keys(ms);
+  if (!keys.length){ $("memos").hidden = true; return; }
+  $("memos").hidden = false;
+  $("memoNote").textContent = "One memo per proposed order: why the model wants it, why it might be wrong, and what would change the view. Every point cites the run's evidence or a dated source. The verdict is an opinion; orders change only when you edit and approve them.";
+  $("memoBody").innerHTML = keys.map(t => {
+    const m = ms[t].memo, errs = ms[t].errors || [], ev = ms[t].evidence || {};
+    if (!m) return `<details><summary><b>${esc(t)}</b> <span class="mut">no memo yet</span></summary></details>`;
+    const news = Object.fromEntries((m.news || []).map(n => [n.id, n]));
+    const cite = k => news[k] ? `<a href="${esc(safeUrl(news[k].url))}" target="_blank" rel="noopener" title="${esc(news[k].title)}">${esc(k)}</a>`
+      : ev[k] ? `<span title="${esc(ev[k].label)}: ${esc(ev[k].unit === "fraction" ? pct(ev[k].value) : ev[k].value)}" style="border-bottom:1px dotted">${esc(k)}</span>` : `<span class="neg">${esc(k)}?</span>`;
+    const list = key => `<ul>${(m[key] || []).map(c => `<li>${esc(c.text)} <span class="sub">${(c.cites || []).length ? "[" + c.cites.map(cite).join(", ") + "]" : ""}</span></li>`).join("")}</ul>`;
+    const [pc, lab] = VERDICT[m.verdict] || ["p-n", m.verdict];
+    return `<details ${m.verdict === "CHALLENGE" ? "open" : ""} style="margin:6px 0"><summary><b>${esc(t)}</b> <span class="pill ${pc}">${esc(lab)}</span> <span class="mut">${esc(m.summary || "")}</span>${errs.length ? ` <span class="pill p-sell">invalid: ${esc(errs.slice(0, 2).join("; "))}</span>` : ""}</summary>
+      <div class="grid2"><div><b style="font-size:13px">Thesis</b>${list("thesis")}</div><div><b style="font-size:13px">Why the model might be wrong</b>${list("red_team")}</div></div>
+      <b style="font-size:13px">What would change the view</b>${list("what_would_change")}
+      <div class="sub">Sources: ${(m.news || []).map(n => `${esc(n.id)} <a href="${esc(safeUrl(n.url))}" target="_blank" rel="noopener">${esc(n.publisher || "")}, ${esc(n.date)}</a>`).join("; ")}. Written ${esc(String(m.written_at || "").slice(0, 10))} by ${esc(m.author || "")}.</div></details>`;
+  }).join("");
+}
+function renderSignals(s){
+  const q = s.signal_quality;
+  if (!q || !q.sessions_recorded){ $("signals").hidden = true; return; }
+  $("signals").hidden = false;
+  $("sigNote").innerHTML = esc(`Every run records the model's signals for all stocks and sectors (${q.sessions_recorded} runs so far). Each is later scored against the stock's return minus SPY's, divided by its own volatility, over 21 and 63 trading days. Rank IC: 0 = no skill, +0.05 sustained is good. For the model's buys a false buy scores −1.5 and a correct one +1.`) + (q.note ? ` <span class="pill p-rev">${esc(q.note)}</span>` : "");
+  const sig = (q.signals || []).slice().sort((a, b) => a.horizon - b.horizon || (a.signal !== "master_alpha_score") - (b.signal !== "master_alpha_score"));
+  $("sigTbl").innerHTML = sig.length ? `<thead><tr><th>Signal</th><th class="r">Horizon</th><th class="r">Runs scored</th><th class="r">Mean rank IC</th><th class="r">Top − bottom quintile</th></tr></thead><tbody>` +
+    sig.map(x => `<tr><td>${esc(x.name)}</td><td class="r num">${x.horizon}d</td><td class="r num">${x.runs_scored}</td><td class="r num ${cls(x.mean_ic)}">${f2(x.mean_ic)}</td><td class="r num ${cls(x.mean_quintile_spread_z)}">${f2(x.mean_quintile_spread_z)}</td></tr>`).join("") + `</tbody>`
+    : `<tbody><tr><td class="mut">No run is old enough to score yet (needs 21 trading days).</td></tr></tbody>`;
+  const sl = q.sector_layer_history;
+  $("sigExtra").innerHTML = (q.model_buys || []).map(b => `<p>Model buys, ${b.horizon} days: <b>${pct(b.hit_rate, 0)}</b> beat SPY after adjusting for volatility (${b.positions_scored} positions, ${b.runs_scored} runs); asymmetric score <b class="${cls(b.asymmetric_score)}">${f2(b.asymmetric_score)}</b> (−1.5 to +1).</p>`).join("") +
+    (sl && sl.months ? `<p>Macro sector layer, ${esc(sl.from)} to ${esc(sl.to)} (${sl.months} months): mean rank IC <b class="${cls(sl.mean_ic)}">${f2(sl.mean_ic, 3)}</b>, t-stat ${f2(sl.ic_t_stat)}, positive in ${pct(sl.share_positive, 0)} of months.</p>` : "");
+}
 
 /* model forward track record, same method as ledger/track_record.csv */
 function trackRows(upto){

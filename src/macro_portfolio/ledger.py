@@ -399,7 +399,23 @@ def record_run(project_root: Path, run_dir: Path, min_weight: float = DEFAULT_MI
         snap["valuation_sheets"] = {}
         snap.setdefault("warnings", []).append(f"valuation sheets: {type(exc).__name__}: {exc}")
 
-    (d / "snapshots" / f"{sess}_{rid}.json").write_text(json.dumps(snap, indent=1), encoding="utf-8")
+    # v1.0.16: signal tracking (are the signals any good?) and per-order memos
+    try:
+        from .signal_eval import record_signals, evaluate
+        record_signals(project_root, run_dir, sess, rid)
+        snap["signal_quality"] = evaluate(project_root)
+    except Exception as exc:
+        snap["signal_quality"] = {}
+        snap.setdefault("warnings", []).append(f"signal tracking: {type(exc).__name__}: {exc}")
+    try:
+        from .memo import build_evidence_packs, load_memos
+        build_evidence_packs(project_root, snap)
+        snap["memos"] = load_memos(project_root, snap)
+    except Exception as exc:
+        snap["memos"] = {}
+        snap.setdefault("warnings", []).append(f"order memos: {type(exc).__name__}: {exc}")
+
+    (d / "snapshots" / f"{sess}_{rid}.json").write_text(json.dumps(snap, indent=1, default=str), encoding="utf-8")
 
     k, r, s = snap["kpis"], snap["regime"], snap["state"]
     runs_row = pd.DataFrame([{

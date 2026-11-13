@@ -123,6 +123,36 @@ with tab_paper:
         live = edited[edited["action"] == "EXECUTE"]
         buys = float((live.loc[live["side"] == "BUY", "shares"] * live.loc[live["side"] == "BUY", "ref_price"]).sum())
         sells = float((live.loc[live["side"] == "SELL", "shares"] * live.loc[live["side"] == "SELL", "ref_price"]).sum())
+        # v1.0.16: reviewer memos beside the orders
+        mdir = LEDGER / "paper" / "memos" / latest.name[:10]
+        if mdir.exists():
+            from macro_portfolio.memo import validate as memo_validate
+            st.markdown("**Reviewer memos** (opinion only; the orders above change only when you edit them)")
+            for t in orders["ticker"]:
+                mp, pp = mdir / f"{t}.json", mdir / f"{t}.evidence.json"
+                if not mp.exists():
+                    st.caption(f"{t}: no memo. Run `python -m macro_portfolio.memo generate` or ask Claude in chat.")
+                    continue
+                memo = json.loads(mp.read_text(encoding="utf-8"))
+                pack = json.loads(pp.read_text(encoding="utf-8")) if pp.exists() else None
+                errs = memo_validate(memo, pack)
+                icon = {"SUPPORT": "🟢", "SUPPORT_WITH_CONCERNS": "🟡", "CHALLENGE": "🔴"}.get(memo.get("verdict"), "⚪")
+                with st.expander(f"{icon} {t} · {str(memo.get('verdict', '')).replace('_', ' ').title()} · {memo.get('summary', '')}"):
+                    if errs:
+                        st.error("Memo failed validation: " + "; ".join(errs))
+                    news = {n["id"]: n for n in memo.get("news", [])}
+                    def _fmt(c):
+                        refs = ", ".join(f"[{k}]({news[k]['url']})" if k in news else f"`{k}`" for k in c.get("cites", []))
+                        return f"- {c['text']} {('· ' + refs) if refs else ''}"
+                    c1, c2 = st.columns(2)
+                    c1.markdown("**Thesis**\n" + "\n".join(_fmt(c) for c in memo.get("thesis", [])))
+                    c2.markdown("**Why the model might be wrong**\n" + "\n".join(_fmt(c) for c in memo.get("red_team", [])))
+                    st.markdown("**What would change the view**\n" + "\n".join(_fmt(c) for c in memo.get("what_would_change", [])))
+                    st.caption("Sources: " + "; ".join(f"{n['id']} {n.get('publisher', '')} {n['date']}" for n in memo.get("news", []))
+                               + f" · written {str(memo.get('written_at', ''))[:10]} by {memo.get('author', '')}")
+                    if pack:
+                        st.dataframe(pd.DataFrame([{"id": k, **v} for k, v in pack["evidence"].items()]).astype(str),
+                                     use_container_width=True, hide_index=True, height=240)
         st.caption(f"At reference prices: buys ${buys:,.0f}, sells ${sells:,.0f}, net cash needed ${buys - sells:,.0f}"
                    + (f" (cash ${pa['cash']:,.0f})" if pa else ""))
         a, b = st.columns(2)

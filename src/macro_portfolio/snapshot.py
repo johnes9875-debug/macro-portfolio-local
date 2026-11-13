@@ -60,6 +60,8 @@ def _json_default(obj):
 def _write_obj(obj, path_base: Path):
     if isinstance(obj, pd.DataFrame):
         path = path_base.with_suffix(".parquet")
+        if not isinstance(obj.index, pd.RangeIndex):
+            obj = obj.reset_index()
         obj.to_parquet(path, index=False)
         return path
     if isinstance(obj, pd.Series):
