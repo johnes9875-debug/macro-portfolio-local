@@ -53,6 +53,14 @@ The deduplicated master universe is:
 All investable names must be mapped to one of the 11 canonical GICS sectors
 before Section E is allowed to continue.
 
+## Run button (dashboard)
+
+Open the dashboard (`scripts\start_dashboard.bat`) and press **▶ Run now** in the sidebar. It starts the full
+pipeline in the background (same as `scripts\run_once.bat`), shows the log while it runs, and when it finishes
+the run is recorded in the ledger, pushed to GitHub (if `local.auto_push_ledger`) and shown on the page. Closing
+the browser does not stop the run. For the Claude page, use **Download latest run for the Claude page** in the
+sidebar, then **Load new run** on the page.
+
 ## v1.0.16 order memos and signal tracking
 
 **Order memos (reviewer, never decider).** When a paper proposal is waiting for approval, each run writes an

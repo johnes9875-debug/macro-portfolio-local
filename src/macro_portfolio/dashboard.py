@@ -45,10 +45,46 @@ def snapshot_for(run_dir: Path, run_id: str, session: str) -> dict:
     return build_snapshot(PROJECT_ROOT, run_dir)
 
 
+# ---------------------------------------------------------------- run button
+from macro_portfolio import run_control
+
+def run_panel():
+    rs = run_control.status(PROJECT_ROOT)
+    st.sidebar.markdown("### Run the model")
+    if rs.get("state") == "running":
+        st.sidebar.info(f"Running since {rs['started_at'][11:16]} UTC. This page refreshes itself; "
+                        "you can close it and the run continues.")
+        st.sidebar.code(run_control.log_tail(PROJECT_ROOT, 12) or "starting...", language=None)
+        return True
+    if rs.get("state") == "finished" and not st.session_state.get("seen_" + rs.get("started_at", "")):
+        st.session_state["seen_" + rs["started_at"]] = True
+        st.sidebar.success("Run finished: recorded in the ledger and loaded below.")
+    elif rs.get("state") == "failed":
+        st.sidebar.error("The last run did not finish. The page still shows the previous run.")
+        with st.sidebar.expander("Log"):
+            st.code(run_control.log_tail(PROJECT_ROOT, 60), language=None)
+    st.sidebar.caption("Fetches the latest data, runs every stage, records the run, "
+                       "pushes the ledger to GitHub and shows the result here. Takes several minutes.")
+    if st.sidebar.button("▶ Run now", type="primary", use_container_width=True):
+        run_control.start(PROJECT_ROOT, force=True)
+        st.rerun()
+    latest = run_control.export_latest_snapshot(PROJECT_ROOT)
+    if latest:
+        st.sidebar.download_button("Download latest run for the Claude page", latest.read_bytes(),
+                                   file_name=latest.name, mime="application/json", use_container_width=True)
+    return False
+
+
+RUNNING = run_panel()
+
 # ---------------------------------------------------------------- header
 ptr = latest_pointer()
 if not ptr:
-    st.warning("No successful run yet. Run RUN_ME.ipynb (or scripts\\run_once.bat) first.")
+    st.warning("No successful run yet. Press Run now in the sidebar.")
+    if RUNNING:
+        import time as _time
+        _time.sleep(10)
+        st.rerun()
     st.stop()
 
 if OPS_DB_PATH.exists():
@@ -271,3 +307,9 @@ with tab_system:
             except Exception as exc:
                 st.error(str(exc))
     st.caption(f"Snapshot directory: {run_dir}")
+
+# ---------------------------------------------------------------- follow a running job
+if RUNNING:
+    import time as _time
+    _time.sleep(10)
+    st.rerun()

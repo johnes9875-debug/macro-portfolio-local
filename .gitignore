@@ -22,3 +22,4 @@ logs/
 
 # --- the run ledger IS tracked (see ledger/README.md) ---
 !ledger/
+ledger/latest_snapshot.json
